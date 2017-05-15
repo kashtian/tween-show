@@ -4,11 +4,12 @@ const HTMLPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const vueConfig = require('./vue-loader.config');
 
-if (process.argv.indexOf('--production') < 0) {
+if (process.argv.indexOf('--development') > -1) {
     /**
      * 开发环境配置热替换
      */
     baseConfig.entry.app.push('webpack-hot-middleware/client');
+    baseConfig.output.filename = '[name].js';
 } else {
     vueConfig.loaders = {
         less: ExtractTextPlugin.extract({
@@ -32,8 +33,11 @@ const devConfig = {
 
 const prodConfig = {
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production')
+        }),
         //根据模块调用次数，给模块分配ids，常被调用的ids分配更短的id，使得ids可预测，降低文件大小
-        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false
@@ -51,5 +55,5 @@ const prodConfig = {
     ]
 }
 
-module.exports = Object.assign({}, baseConfig, process.argv.indexOf('--production') > -1 ? prodConfig : devConfig);
+module.exports = Object.assign({}, baseConfig, process.argv.indexOf('--development') > -1 ? devConfig : prodConfig);
 

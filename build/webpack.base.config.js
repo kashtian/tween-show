@@ -1,5 +1,5 @@
 const path = require('path');
-import vueConfig from './vue-loader.config';
+const vueConfig = require('./vue-loader.config');
 
 module.exports = {
     entry: {

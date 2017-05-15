@@ -1,1 +1,3 @@
-export const port = process.env.PORT || 3008;
+module.exports = {
+    port: process.env.PORT || 3008
+}
