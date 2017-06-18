@@ -1,22 +1,14 @@
+let timeDis = 0, point = {}, radius = 5, animationId = 0,
+    ps = [
+        {x: 0, y: 0},
+        {x: 0.05, y: 1.03},
+        {x: 0.42, y: 1.23},
+        {x: 1, y: 1}
+    ];
+
 export default {
     /**
-     * 公式：B(t)=P0(1-t)³+3P1t(1-t)²+3P2t²(1-t)+P3t³,  t∈[0,1]
-     */
-    getPoints(ps, pointNum, dis) {
-        let arr = [], t = 0;
-        dis = dis || 1;
-        for (let i = 0; i < pointNum; i++) {
-            t = i / (pointNum - 1);
-            arr[i] = {
-                x: this.getBt(ps, t) * dis,
-                y: -this.getBt(ps, t, 'y') * dis
-            }
-        }
-        return arr;
-    },
-
-    /**
-     * 根据公式求值
+     * 根据公式求值B(t)=P0(1-t)³+3P1t(1-t)²+3P2t²(1-t)+P3t³,  t∈[0,1]
      * @param {Array} ps 三次贝塞尔曲线中的点
      * @param {Number} t 曲率
      * @param {String} field 'x' || 'y'
@@ -39,20 +31,38 @@ export default {
     draw(canvas) {
         canvas.width = 300;
         canvas.height = 300;
-        let ctx = canvas.getContext('2d'),
-            ps = [
-                {x: 0, y: 0},
-                {x: 0.05, y: 1.03},
-                {x: 0.42, y: 1.23},
-                {x: 1, y: 1}
-            ],
-            radius = 2;
-        let points = this.getPoints(ps, 20, 200);
+        let ctx = canvas.getContext('2d');
         ctx.translate(50, 250);
-        points.forEach(v => {
-            ctx.beginPath();
-            ctx.arc(v.x - radius, v.y - radius, radius, 0, 2 * Math.PI);
-            ctx.fill();
+        ctx.beginPath();
+        ctx.arc(- radius, - radius, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        this.drawLine(new Date(), 3000, 200, ctx);
+    },
+
+    drawLine(date, time, dis, ctx) {  
+        if (timeDis == time) {
+            cancelAnimationFrame(animationId);
+            return;
+        } else if (timeDis > time) {
+            ctx.clearRect(-50,-250,300,300);
+            timeDis = time;
+        } else {
+            ctx.clearRect(-50,-250,300,300);
+            timeDis = new Date() - date;
+        }     
+        point.x = this.getBt(ps, timeDis / time) * dis;
+        point.y = this.getBt(ps, timeDis / time, 'y') * dis;
+        // ctx.beginPath();
+        // ctx.arc(point.x - radius, point.y - radius, radius, 0, 2 * Math.PI);
+        // ctx.fill();
+        ctx.save();
+        ctx.translate(point.x, -point.y);
+        ctx.beginPath();
+        ctx.arc(-radius, -radius, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+        animationId = requestAnimationFrame(()=> {
+            this.drawLine(date, time, dis, ctx);
         })
     }
 }
