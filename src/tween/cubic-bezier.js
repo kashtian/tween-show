@@ -7,21 +7,29 @@ let timeDis = 0, point = {}, radius = 5, animationId = 0,
     ];
 
 export default {
-    /**
-     * 根据公式求值B(t)=P0(1-t)³+3P1t(1-t)²+3P2t²(1-t)+P3t³,  t∈[0,1]
-     * @param {Array} ps 三次贝塞尔曲线中的点
-     * @param {Number} t 曲率
-     * @param {String} field 'x' || 'y'
-     */
-    getBt(ps, t, field) {
-        let a, b, c, tSquared = t * t, tCubed = t * tSquared;
+    // 二项式求值
+    binomial(i, n) {
+        return this.factorial(n) / (this.factorial(i) * this.factorial(n - i));
+    },
+
+    // 求阶乘
+    factorial(n) {
+        let result = 1;
+        for (let i = 1; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    },
+
+    // 贝兹曲线通用公式 ( t∈[0,1] )
+    getCommonBt(pts, t, field) {
+        let res = 0;
         field = field || 'x';
 
-        c = 3 * (ps[1][field] - ps[0][field]);
-        b = 3 * (ps[2][field] - ps[1][field]) - c;
-        a = ps[3][field] - ps[0][field] - c - b;
-
-        return a * tCubed + b * tSquared + c * t + ps[0][field];
+        for (let i = 0, n = pts.length - 1; i <= n; i++) {
+            res += this.binomial(i, n) * pts[i][field] * Math.pow(1 - t, n - i) * Math.pow(t, i);
+        }
+        return res;
     },
 
     /**
@@ -50,8 +58,8 @@ export default {
             ctx.clearRect(-50,-250,300,300);
             timeDis = new Date() - date;
         }     
-        point.x = this.getBt(ps, timeDis / time) * dis;
-        point.y = this.getBt(ps, timeDis / time, 'y') * dis;
+        point.x = this.getCommonBt(ps, timeDis / time) * dis;
+        point.y = this.getCommonBt(ps, timeDis / time, 'y') * dis;
         // ctx.beginPath();
         // ctx.arc(point.x - radius, point.y - radius, radius, 0, 2 * Math.PI);
         // ctx.fill();
