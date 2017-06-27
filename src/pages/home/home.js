@@ -13,14 +13,14 @@ export default {
     mounted() {
         bezier.draw(this.$refs.canvas);
         this.createMatchMan();
-        if (typeof window != undefined) {
-            let script = document.createElement('script');
-            script.src = 'http://localhost:3010/socket.io/socket.io.js';
-            script.onload = () => {
-                this.initSocket();
-            }
-            document.head.appendChild(script);
-        }
+        // if (typeof window != undefined) {
+        //     let script = document.createElement('script');
+        //     script.src = 'http://localhost:3010/socket.io/socket.io.js';
+        //     script.onload = () => {
+        //         this.initSocket();
+        //     }
+        //     document.head.appendChild(script);
+        // }
         pushMsg.init(this.getAppKey);
     },
 

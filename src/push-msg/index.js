@@ -2,14 +2,37 @@ export default {
     init(appKeyFn) {
         window.addEventListener('load', () => {
             if ('serviceWorker' in navigator) {
-                // navigator.serviceWorker.getRegistration()
-                //     .then(e => {
-                //         e.unregister();
-                //     })
-                navigator.serviceWorker.register('./sw.js')
-                    .then(() => this.initState(appKeyFn));
+                this.register('./sw.js').then(() => this.initState(appKeyFn));
+                //this.unregister();
             }
         })
+    },
+
+    register(filePath) {
+        if ('serviceWorker' in navigator) {
+            return navigator.serviceWorker.register(filePath)
+                .catch(err => {
+                    console.log('Register error: ', err);
+                })
+        }
+        return Promise.reject('No serviceWorker');
+    },
+
+    unregister() {
+        if ('serviceWorker' in navigator) {
+            return navigator.serviceWorker.getRegistration()
+                .then(registration => {
+                    if (!registration) {
+                        return;
+                    }
+                    registration.pushManager.getSubscription()
+                        .then(subscription => {                            
+                            registration.unregister();
+                            subscription && this.deleteSubscriptionToServer(subscription.endpoint);
+                        })
+                })
+        }
+        return Promise.reject('No serviceWorker');
     },
 
     initState(appKeyFn) {
@@ -25,7 +48,7 @@ export default {
 
         if (!('PushManager' in window)) {
             console.log('Push messaging is not supported.');
-            return ;
+            return;
         }
 
         navigator.serviceWorker.ready.then(registration => {
@@ -33,7 +56,7 @@ export default {
                 .then(subscription => {
                     console.log('get pushSubscription: ', subscription);
                     if (!subscription) {
-                        console.log('user can not subscribed');
+                        console.log('user subscribe now');
                         this.subscribe(appKeyFn);
                         return;
                     }
@@ -51,24 +74,10 @@ export default {
                 userVisibleOnly: true,
                 applicationServerKey: Uint8Array.from(keyInfo.publicKey.data)
             }).then(subscription => {
-                fetch('http://localhost:3010/crypto/endPoint', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-			            'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        pushSubscription: subscription.toJSON()
-                    })
-                }).then(result => result.json())
-                .then(result => {
-                    if (result.code == 200) {
-                        console.log('send endpoint to server success');
-                    } 
-                })
+                this.updateSubscriptionToServer(subscription);
                 console.log('subscription: ', subscription.toJSON());
-                console.log('p256dh: ', subscription.getKey('p256dh'));
-                console.log('p256dh: ', subscription.getKey('auth'));
+            }).catch(err => {
+                console.log('subscribe error:　', err);
             })
         })
     },
@@ -81,11 +90,48 @@ export default {
                         return;
                     }
                     subscription.unsubscribe().then(() => {
-                        console.log('unsubscribe success');
+                        this.deleteSubscriptionToServer(subscription.endpoint);
+                        console.log('unsubscribe success', subscription);
                     })
                 }).catch(err => {
                     console.log(err);
                 })
         })
+    },
+
+    updateSubscriptionToServer(pushSubscription) {
+        fetch('http://localhost:3010/crypto/endPoint', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                pushSubscription: pushSubscription.toJSON()
+            })
+        }).then(result => result.json())
+            .then(result => {
+                if (result.code == 200) {
+                    console.log('send endpoint to server success');
+                }
+            })
+    },
+
+    deleteSubscriptionToServer(endpoint) {
+        fetch('http://localhost:3010/crypto/delEndpoint', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                endpoint: endpoint
+            })
+        }).then(result => result.json())
+            .then(result => {
+                if (result.code == 200) {
+                    console.log(result.msg);
+                }
+            })
     }
 }
