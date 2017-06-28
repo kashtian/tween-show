@@ -100,7 +100,7 @@ export default {
     },
 
     updateSubscriptionToServer(pushSubscription) {
-        fetch('http://localhost:3010/crypto/endPoint', {
+        fetch('http://localhost:3010/push/saveSubscription', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -118,7 +118,7 @@ export default {
     },
 
     deleteSubscriptionToServer(endpoint) {
-        fetch('http://localhost:3010/crypto/delEndpoint', {
+        fetch('http://localhost:3010/push/delSubscription', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

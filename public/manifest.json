@@ -1,6 +1,0 @@
-{
-  "name": "webpush",
-  "short_name": "webpush",
-  "gcm_sender_id": "77181620372",
-  "permissions": ["gcm"]
-}

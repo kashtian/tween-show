@@ -51,7 +51,7 @@ export default {
         },
 
         getAppKey() {
-            return fetch('http://localhost:3010/crypto/appServerKey')
+            return fetch('http://localhost:3010/push/getAppKey')
                 .then(res => res.json())
                 .then(res => {
                     if (res.code == 200) {

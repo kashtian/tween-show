@@ -1,0 +1,22 @@
+{
+  "dir": "ltr",
+  "lang": "zh-cn",
+  "name": "tween-show",
+  "scope": "/",
+  "display": "standalone",
+  "start_url": "/",
+  "short_name": "tw",
+  "theme_color": "black",
+  "description": "animaition show",
+  "orientation": "any",
+  "background_color": "transparent",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "https://tw.kashtian.com/favicon.ico",
+      "type": "image/png",
+      "sizes": "128x128"
+    }
+  ]
+}
