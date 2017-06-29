@@ -4,5 +4,6 @@
     "gcm_sender_id": "77181620372",
     "permissions": [
         "gcm"
-    ]
+    ],
+     "display": "standalone"
 }
