@@ -1,3 +1,5 @@
+import { pushHost } from '../../config/sys.config';
+
 export default {
     init(appKeyFn) {
         window.addEventListener('load', () => {
@@ -100,7 +102,7 @@ export default {
     },
 
     updateSubscriptionToServer(pushSubscription) {
-        fetch('http://localhost:3010/push/saveSubscription', {
+        fetch(`//${pushHost}/push/saveSubscription`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -118,7 +120,7 @@ export default {
     },
 
     deleteSubscriptionToServer(endpoint) {
-        fetch('http://localhost:3010/push/delSubscription', {
+        fetch(`//${pushHost}/push/delSubscription`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

@@ -1,6 +1,7 @@
 import bezier from '../../tween/cubic-bezier';
 import { MatchMan } from '../../matchMan';
 import pushMsg from '../../push-msg';
+import { pushHost } from '../../../config/sys.config';
 
 export default {
     name: 'home',
@@ -51,7 +52,7 @@ export default {
         },
 
         getAppKey() {
-            return fetch('http://localhost:3010/push/getAppKey')
+            return fetch(`//${pushHost}/push/getAppKey`)
                 .then(res => res.json())
                 .then(res => {
                     if (res.code == 200) {
