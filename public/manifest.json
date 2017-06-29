@@ -1,0 +1,8 @@
+{
+    "name": "tween-show",
+    "short_name": "tween-show",
+    "gcm_sender_id": "77181620372",
+    "permissions": [
+        "gcm"
+    ]
+}
