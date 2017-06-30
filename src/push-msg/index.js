@@ -7,7 +7,7 @@ export default {
                 this.register('./sw.js').then(() => this.initState(appKeyFn));
                 //this.unregister();
             }
-        })
+        });
     },
 
     register(filePath) {

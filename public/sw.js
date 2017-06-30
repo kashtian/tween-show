@@ -3,7 +3,11 @@ self.addEventListener('push', function(event) {
     event.waitUntil(
         self.registration.showNotification('test', {
             body: event.data.text(),
-            icon: '/images/disc.png'
+            icon: '/favicon.ico'
         })
     )
+});
+
+self.addEventListener('install', event => {
+    self.skipWaiting();
 })
