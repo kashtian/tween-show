@@ -12,3 +12,47 @@
 	animation: typing 15s steps(20, end), /* # of steps = # of chars */
 	           blink-caret .3s step-end infinite alternate;
 }
+
+.text {     
+    font-size: 8em;
+    fill: none;
+    stroke-width:2;
+    stroke-dasharray: 80 160;  
+    &:nth-child(2) {     
+        stroke: #F60A0A;
+        stroke-dashoffset: 0;
+        animation: stroke 10s linear alternate infinite;
+    }
+    &:nth-child(3) {        
+        stroke: #F2FF14;
+        stroke-dashoffset: 80;
+        animation: stroke1 10s linear alternate infinite;
+    }
+    &:nth-child(4) {     
+        stroke: #FB9505;
+         stroke-dashoffset: 160;
+         animation: stroke2 10s linear alternate infinite;
+    }
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 960;
+    stroke-dasharray: 80 160;
+  }
+}
+
+@keyframes stroke1 {
+  100% {
+    stroke-dashoffset: 1040;
+    stroke-dasharray: 80 160;
+  }
+}
+
+
+@keyframes stroke2 {
+  100% {
+    stroke-dashoffset: 1120;
+    stroke-dasharray: 80 160;
+  }
+}
