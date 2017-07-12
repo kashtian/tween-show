@@ -57,13 +57,138 @@
         </svg>
         <svg width="500" height="500">
             <symbol id="s-text">
-                <text x="50%" y="50%" text-anchor="middle">YO-YO</text>
+                <text x="50%" y="50%" text-anchor="middle">Alloy</text>
             </symbol>
             <use xlink:href="#s-text" class="text" />
             <use xlink:href="#s-text" class="text" />
             <use xlink:href="#s-text" class="text" />
+            <use xlink:href="#s-text" class="text" />
+            <use xlink:href="#s-text" class="text" />
+            <use xlink:href="#s-text" class="text" />
+            <use xlink:href="#s-text" class="text" />
         </svg>
-        
+        <svg width="500" height="500">
+            <linearGradient id="mg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#FF0000" />
+                <stop offset="20%" stop-color="#FF7F00" />
+                <stop offset="40%" stop-color="#FFFF00" />
+                <stop offset="60%" stop-color="#00FF00" />
+                <stop offset="80%" stop-color="#00FFFF" />
+                <stop offset="100%" stop-color="#8B00FF" />
+            </linearGradient>
+            <symbol id="alloy"> 
+                <text x="50%" y="50%" text-anchor="middle">Alloy</text>
+            </symbol>
+            <use xlink:href="#alloy"  class="alloy" />
+            <use xlink:href="#alloy" class="alloy two" />
+            <path fill="#1EB287">
+                <animate 
+                        attributeName="d" 
+                        dur="1440ms" 
+                        repeatCount="indefinite"
+                        keyTimes="0;
+                                .0625;
+                                .208333333;
+                                .3125;
+                                .395833333;
+                                .645833333;
+                                .833333333;
+                                1"
+                        calcMode="linear" 
+                        values="M 0,0 
+                                C 50,0 50,0 100,0
+                                100,50 100,50 100,100
+                                50,100 50,100 0,100
+                                0,50 0,50 0,0
+                                Z;
+
+                                M 0,0 
+                                C 50,0 50,0 100,0
+                                100,50 100,50 100,100
+                                50,100 50,100 0,100
+                                0,50 0,50 0,0
+                                Z;
+
+                                M 50,0 
+                                C 75,25 75,25 100,50 
+                                75,75 75,75 50,100
+                                25,75 25,75 0,50
+                                25,25 25,25 50,0
+                                Z;
+
+                                M 25,50 
+                                C 37.5,25 37.5,25 50,0 
+                                75,50 75,50 100,100
+                                50,100 50,100 0,100
+                                12.5,75 12.5,75 25,50
+                                Z;
+
+                                M 25,50 
+                                C 37.5,25 37.5,25 50,0 
+                                75,50 75,50 100,100
+                                50,100 50,100 0,100
+                                12.5,75 12.5,75 25,50
+                                Z;
+
+                                M 50,0
+                                C 77.6,0 100,22.4 100,50 
+                                100,77.6 77.6,100 50,100
+                                22.4,100, 0,77.6, 0,50
+                                0,22.4, 22.4,0, 50,0
+                                Z;
+                                
+                                M 50,0
+                                C 77.6,0 100,22.4 100,50 
+                                100,77.6 77.6,100 50,100
+                                22.4,100, 0,77.6, 0,50
+                                0,22.4, 22.4,0, 50,0
+                                Z;
+                                
+                                M 100,0 
+                                C 100,50 100,50 100,100
+                                50,100 50,100 0,100
+                                0,50 0,50 0,0
+                                50,0 50,0 100,0
+                                Z;"/>
+            </path>
+            
+        </svg>
+        <svg width="300" height="300">
+            <path fill="red">
+                <animate 
+                    attributeName="d" 
+                    dur="1s" 
+                    repeatCount="indefinite"
+                    keyTimes="0;.25;.5;1" 
+                    calcMode="linear"
+                    values="
+                        M50,0
+                        C100,0 100,0 100,50
+                        100,100 100,100 50,100
+                        0,100 0,100 0,50
+                        0,0 0,0 50,0
+                        Z;
+
+                        M50,0
+                        C75,0 100,25 100,50
+                        100,75 75,100 50,100
+                        25,100 0,75 0,50
+                        0,25 25,0 50,0
+                        Z;
+
+                        M50,0
+                        C75,0 100,75 100,100
+                        0,100 0,100 0,100
+                        0,75 25,0 50,0
+                        Z;
+
+                        M50,0
+                        C100,100 100,100 100,100
+                        0,100 0,100 0,100
+                        50,0 50,0 50,0
+                        Z;"/>
+            </path>
+        </svg>
     </div>
 </template>
 

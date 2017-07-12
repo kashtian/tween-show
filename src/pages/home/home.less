@@ -9,50 +9,148 @@
 	margin: 2em 1em;
 	white-space: nowrap;
 	overflow: hidden;
-	animation: typing 15s steps(20, end), /* # of steps = # of chars */
+	animation: typing 18s steps(20, end), /* # of steps = # of chars */
 	           blink-caret .3s step-end infinite alternate;
+}
+.alloy {
+    font-size: 8em;
+    fill: none;
+    stroke-width:2;
+    stroke: url(#mg);
+    stroke-dashoffset: 0;
+    stroke-dasharray: 0 100;
+    animation: alloy1 8s 1 forwards;
+    &.two {
+      stroke: url(#mg);
+      stroke-dashoffset: 0;
+      stroke-dasharray: 0 100;
+      animation: alloy2 8s 1 forwards;
+    }
+}
+
+@keyframes alloy1 {
+  100% {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 100 100;
+  }
+}
+
+@keyframes alloy2 {
+  100% {
+    stroke-dashoffset: 100;
+    stroke-dasharray: 100 100;
+  }
 }
 
 .text {     
     font-size: 8em;
     fill: none;
     stroke-width:2;
-    stroke-dasharray: 80 160;  
+    stroke-dasharray: 0 60%;  
     &:nth-child(2) {     
-        stroke: #F60A0A;
-        stroke-dashoffset: 0;
-        animation: stroke 10s linear alternate infinite;
+        stroke: #FF0000;
+        animation: stroke 8s forwards;
     }
     &:nth-child(3) {        
-        stroke: #F2FF14;
-        stroke-dashoffset: 80;
-        animation: stroke1 10s linear alternate infinite;
+        stroke: #FF7F00;
+        animation: stroke1 8s forwards ;
     }
     &:nth-child(4) {     
-        stroke: #FB9505;
-         stroke-dashoffset: 160;
-         animation: stroke2 10s linear alternate infinite;
+        stroke: #FFFF00;
+         animation: stroke2 8s forwards ;
+    }
+    &:nth-child(5) {     
+        stroke: #00FF00;
+         animation: stroke3 8s forwards ;
+    }
+    &:nth-child(6) {     
+        stroke: #00FFFF;
+         animation: stroke4 8s forwards ;
+    }
+    &:nth-child(7) {     
+        stroke: #0000FF;
+         animation: stroke5 8s forwards ;
+    }
+    &:nth-child(8) {     
+        stroke: #8B00FF;
+         animation: stroke6 8s forwards ;
     }
 }
 
 @keyframes stroke {
-  100% {
-    stroke-dashoffset: 960;
-    stroke-dasharray: 80 160;
+  50% {
+    stroke-dashoffset: 20;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+    stroke-dashoffset: 20;
+    stroke-dasharray: 20 100;  
   }
 }
 
 @keyframes stroke1 {
-  100% {
-    stroke-dashoffset: 1040;
-    stroke-dasharray: 80 160;
+  50% {
+        stroke-dashoffset: 20;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+        stroke-dashoffset: 20;
+    stroke-dasharray: 20 100;  
   }
 }
 
 
 @keyframes stroke2 {
-  100% {
-    stroke-dashoffset: 1120;
-    stroke-dasharray: 80 160;
+  50% {
+         stroke-dashoffset: 40;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+         stroke-dashoffset: 40;
+    stroke-dasharray: 20 100;  
+  }
+}
+
+@keyframes stroke3 {
+  50% {
+         stroke-dashoffset: 60;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+         stroke-dashoffset: 60;
+    stroke-dasharray: 20 100;  
+  }
+}
+
+@keyframes stroke4 {
+  50% {
+         stroke-dashoffset: 80;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+         stroke-dashoffset: 80;
+    stroke-dasharray: 20 100;  
+  }
+}
+
+@keyframes stroke5 {
+  50% {
+         stroke-dashoffset: 100;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+         stroke-dashoffset: 100;
+    stroke-dasharray: 20 100;  
+  }
+}
+
+@keyframes stroke6 {
+  50% {
+         stroke-dashoffset: 120;
+    stroke-dasharray: 20 100;  
+  }
+  70% {
+         stroke-dashoffset: 120;
+    stroke-dasharray: 20 100;  
   }
 }
