@@ -63,7 +63,16 @@
             <use xlink:href="#s-text" class="text" />
             <use xlink:href="#s-text" class="text" />
         </svg>
-        
+        <svg width="500" height="500">
+            <defs>
+                <linearGradient id="lg" x1="0%" y1="0%" x2="0%" y2="100%" >
+                    <stop offset="0%" stop-color="" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <div class="test-box">
+          <div class="test-item" @click="deleteItem($event, index)" v-for="(item, index) in arr" :key="item">点我删除</div>
+        </div>
     </div>
 </template>
 

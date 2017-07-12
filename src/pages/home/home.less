@@ -1,6 +1,10 @@
 @keyframes typing { from { width: 0; } }
 @keyframes blink-caret { 50% { border-color: transparent; } }
 
+body * {
+  margin: 0;
+}
+
 .typing { 
 	font: bold 200% Consolas, Monaco, monospace;
 	border-right: .1em solid;
@@ -54,5 +58,18 @@
   100% {
     stroke-dashoffset: 1120;
     stroke-dasharray: 80 160;
+  }
+}
+
+.test-box {
+  .test-item {
+    display: inline-block;
+    vertical-align: top;
+    width: calc(~"50% - 10px");
+    height: 50px;
+    margin: 0 5px 5px;
+    background: silver;
+    box-sizing: border-box;
+    text-align: center;
   }
 }

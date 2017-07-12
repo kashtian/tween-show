@@ -11,6 +11,12 @@ export default {
         title: '首页'
     },
 
+    data() {
+      return {
+        arr: [1,2,3,4,5,6]
+      }
+    },
+
     mounted() {
         bezier.draw(this.$refs.canvas);
         this.createMatchMan();
@@ -60,6 +66,44 @@ export default {
                     }
                     return {};
                 })
+        },
+
+        getInteger(str) {
+          if (!str) {
+            return 0;
+          }
+          return parseFloat(str.replace(/[a-z]/g, ''));
+        },
+
+        deleteItem(event, index) {
+          let col = 2,
+          el = event.currentTarget,
+          itemW = el.offsetWidth,
+          itemH = el.offsetHeight,
+          itemStyle = window.getComputedStyle(el, null),
+          extraW = this.getInteger(itemStyle.marginLeft) + this.getInteger(itemStyle.marginRight),
+          extraH = this.getInteger(itemStyle.marginTop) + this.getInteger(itemStyle.marginBottom);
+
+          let els = document.querySelectorAll('.test-item');
+          for (let i = 0, len = els.length; i < len; i++) {
+            els[i].style.transition = '';
+            if (i > index) {
+              if (i % col != 0) {
+                els[i].style.transform = `translateX(${itemW + extraW}px)`;
+              } else {
+                els[i].style.transform = `translate(${-itemW * (col-1) - extraW}px, ${itemH + extraH}px)`;
+              }          
+            } 
+          }
+          requestAnimationFrame(() => {
+            for (let i = 0, len = els.length; i < len; i++) {              
+             if (i > index) {
+                els[i].style.transition = `transform 0.5s ${0.3 * (i - index - 1)}s`;  
+                els[i].style.transform = '';
+             }
+            }
+          })
+          this.arr.splice(index,1);
         }
      }
 }
