@@ -76,13 +76,13 @@ export default {
         },
 
         deleteItem(event, index) {
-          let col = 2,
-          el = event.currentTarget,
+          let el = event.currentTarget,
           itemW = el.offsetWidth,
           itemH = el.offsetHeight,
           itemStyle = window.getComputedStyle(el, null),
           extraW = this.getInteger(itemStyle.marginLeft) + this.getInteger(itemStyle.marginRight),
-          extraH = this.getInteger(itemStyle.marginTop) + this.getInteger(itemStyle.marginBottom);
+          extraH = this.getInteger(itemStyle.marginTop) + this.getInteger(itemStyle.marginBottom),
+          col = Math.round(el.parentNode.offsetWidth / (itemW + extraW));
 
           let els = document.querySelectorAll('.test-item');
           for (let i = 0, len = els.length; i < len; i++) {
@@ -91,7 +91,7 @@ export default {
               if (i % col != 0) {
                 els[i].style.transform = `translateX(${itemW + extraW}px)`;
               } else {
-                els[i].style.transform = `translate(${-itemW * (col-1) - extraW}px, ${itemH + extraH}px)`;
+                els[i].style.transform = `translate(${-(itemW + extraW) * (col-1)}px, ${itemH + extraH}px)`;
               }          
             } 
           }
