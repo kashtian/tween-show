@@ -189,6 +189,19 @@
                         Z;"/>
             </path>
         </svg>
+<<<<<<< HEAD
+=======
+        <svg width="500" height="500">
+            <defs>
+                <linearGradient id="lg" x1="0%" y1="0%" x2="0%" y2="100%" >
+                    <stop offset="0%" stop-color="" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <div class="test-box">
+          <div class="test-item" @click="deleteItem($event, index)" v-for="(item, index) in arr" :key="item">点我删除</div>
+        </div>
+>>>>>>> 8ed390d4c7bc74c671a523fd2f31c6fe8b367a56
     </div>
 </template>
 
