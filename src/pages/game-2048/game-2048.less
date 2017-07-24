@@ -1,4 +1,5 @@
 .game-2048 {
+    text-align: center;
     .box-wrapper {
         position: relative;
         font-size: 0;
@@ -26,5 +27,17 @@
             position: absolute;
             top: 0px;
         }
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
     }
 }

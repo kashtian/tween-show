@@ -14,7 +14,7 @@ export default class Game2048 {
             min: 2,
             row: 4,
             el: '.item',
-            time: 3000
+            time: 200
         }, options);
 
         this.init();
@@ -64,12 +64,17 @@ export default class Game2048 {
     }
 
     initEvent() {
-        let box = document.querySelector(this.opts.box);
+        let box = document.querySelector(this.opts.box),
+            dis = 0,
+            x1 = null;
         box.addEventListener('touchstart', (event) => {
-
+            x1 = event.changedTouches[0].clientX;
         });
         box.addEventListener('touchend', (event) => {
-            this.move(this.arr);
+            dis = event.changedTouches[0].clientX - x1;
+            if (Math.abs(dis) > 10) {                
+                this.move(this.arr, dis > 0 ? true : false);
+            }
         })
     }
 
@@ -79,9 +84,15 @@ export default class Game2048 {
             return;
         }
         let i = Math.floor(Math.random() * this.ePos.length),
-            pos = this.ePos[i].split(',');
+            pos = this.ePos[i].split(','),
+            row = parseInt(pos[0]),
+            col = parseInt(pos[1]),
+            item = this.arr[row][col];
 
-        this.arr[pos[0]][pos[1]].value = this.opts.min;
+        item.value = this.opts.min;
+        if (this.els) {
+            this.els[row * this.arr.length + col].style.animation = `scaleIn ${this.opts.time}ms`;
+        }
         this.ePos.splice(i, 1);
     }
 
@@ -97,9 +108,12 @@ export default class Game2048 {
             arr = wholeArr[i];
             this.computeRowArr(arr, i, reverse);
             arr.forEach((v, j) => {
-                this.ePos.push(`${i},${j}`);
+                if (!(v.value && v.newValue)) {                    
+                    this.ePos.push(`${i},${j}`);
+                }
             })
         }
+        this.setEmptyValue();
     }
 
     getV2HArr(arr) {
@@ -158,6 +172,11 @@ export default class Game2048 {
                     arr[next].num = num;
                 }
                 if (temp[cur] == temp[next]) {
+                    if (!reverse) {                        
+                        arr[cur].isMerge = true;
+                    } else {
+                        arr[cur + num].isMerge = true;
+                    }
                     temp[cur] += temp[next];
                     temp[next] = 0;
                     cur = null;
@@ -185,15 +204,22 @@ export default class Game2048 {
     }
 
     setAnimation(item, index) {
-        if (!item.transDis || !item.value) {
+        if (!(item.value || item.newValue)) {
             return;
         }
-        this.els[index].style.transition = `transform ${this.opts.time}ms`;
-        this.els[index].addEventListener('transitionend', function() {
+        let opts = this.opts;
+        this.els[index].style.transition = `transform ${opts.time}ms`;
+        function handle() {
             this.style.transition = '';
             this.style.transform = '';
             item.value = item.newValue;
-        })
+            if (item.isMerge) {
+               // this.style.animation = `scaleIn ${opts.time}ms`;
+                item.isMerge = false;
+            }
+            this.removeEventListener('transitionend', handle);
+        }
+        this.els[index].addEventListener('transitionend', handle)
         requestAnimationFrame(() => {
             this.els[index].style.transform =  `translateX(${item.transDis}px)`;
         }) 
