@@ -22,7 +22,7 @@ export default class Game2048 {
 
     getInteger(str) {
         if (!str) {
-        return 0;
+            return 0;
         }
         return parseFloat(str.replace(/[a-z]/g, ''));
     }
@@ -72,7 +72,7 @@ export default class Game2048 {
         });
         box.addEventListener('touchend', (event) => {
             dis = event.changedTouches[0].clientX - x1;
-            if (Math.abs(dis) > 10) {                
+            if (Math.abs(dis) > 10) {
                 this.move(this.arr, dis > 0 ? true : false);
             }
         })
@@ -108,12 +108,14 @@ export default class Game2048 {
             arr = wholeArr[i];
             this.computeRowArr(arr, i, reverse);
             arr.forEach((v, j) => {
-                if (!(v.value && v.newValue)) {                    
+                if (!v.newValue) {
                     this.ePos.push(`${i},${j}`);
                 }
             })
         }
-        this.setEmptyValue();
+        setTimeout(() => {
+            this.setEmptyValue();
+        }, this.opts.time * 1.2)
     }
 
     getV2HArr(arr) {
@@ -133,26 +135,31 @@ export default class Game2048 {
             cur = null,
             next = null,
             //每个元素应该移动的位置个数
-            num = 0,                  
+            num = 0,
+            index = 0,
             temp = arr.map(v => {
                 return v.value;
             })
-        
+
         if (reverse) {
             i = arr.length - 1;
         }
 
         while (reverse ? i >= 0 : i < temp.length) {
             if (!temp[i]) {
-                num++;                
+                num++;
                 temp.splice(i, 1);
-                
-                if (!reverse) {                    
-                    arr[i + num - 1].num = num;  
+
+                if (!reverse) {
+                    index = i + num - 1;
                 } else {
-                    arr[i].num = num;
+                    if (cur != null) {
+                        cur--;
+                    }
+                    index = i;
                     i--;
                 }
+                arr[index].num = arr[index].value ? num : 0;
                 continue;
             }
             if (cur == null) {
@@ -160,19 +167,19 @@ export default class Game2048 {
             } else {
                 next = i;
             }
-            if (!reverse) {                
+            if (!reverse) {
                 arr[cur + num].num = num;
             } else {
                 arr[cur].num = num;
             }
             if (next != null) {
-                if (!reverse) {                    
+                if (!reverse) {
                     arr[next + num].num = num;
                 } else {
                     arr[next].num = num;
                 }
                 if (temp[cur] == temp[next]) {
-                    if (!reverse) {                        
+                    if (!reverse) {
                         arr[cur].isMerge = true;
                     } else {
                         arr[cur + num].isMerge = true;
@@ -197,7 +204,7 @@ export default class Game2048 {
         this.fillArr(temp, reverse);
         temp.forEach((v, i) => {
             arr[i].newValue = v;
-            arr[i].transDis = reverse ? arr[i].num * this.itemW : -arr[i].num * this.itemW;       
+            arr[i].transDis = reverse ? arr[i].num * this.itemW : -arr[i].num * this.itemW;
             this.setAnimation(arr[i], row * this.arr.length + i);
             this.opts.redraw && this.opts.redraw(row, i);
         })
@@ -213,16 +220,17 @@ export default class Game2048 {
             this.style.transition = '';
             this.style.transform = '';
             item.value = item.newValue;
+            item.num = item.newValue = 0;
             if (item.isMerge) {
-               // this.style.animation = `scaleIn ${opts.time}ms`;
+                // this.style.animation = `scaleIn ${opts.time}ms`;
                 item.isMerge = false;
             }
             this.removeEventListener('transitionend', handle);
         }
         this.els[index].addEventListener('transitionend', handle)
         requestAnimationFrame(() => {
-            this.els[index].style.transform =  `translateX(${item.transDis}px)`;
-        }) 
+            this.els[index].style.transform = `translateX(${item.transDis}px)`;
+        })
     }
 
     fillArr(arr, reverse) {
