@@ -7,6 +7,7 @@ export default class Game2048 {
             [0, 0, 0, 0]
         ];
 
+        this.oldPos = [];
         this.ePos = [];  // empty value postion
 
         this.opts = Object.assign({
@@ -65,22 +66,68 @@ export default class Game2048 {
 
     initEvent() {
         let box = document.querySelector(this.opts.box),
-            dis = 0,
-            x1 = null;
+            disX = 0,
+            disY = 0,
+            x1 = null,
+            y1 = null;
         box.addEventListener('touchstart', (event) => {
             x1 = event.changedTouches[0].clientX;
+            y1 = event.changedTouches[0].clientY;
         });
         box.addEventListener('touchend', (event) => {
-            dis = event.changedTouches[0].clientX - x1;
-            if (Math.abs(dis) > 10) {
-                this.move(this.arr, dis > 0 ? true : false);
+            disX = event.changedTouches[0].clientX - x1;
+            disY = event.changedTouches[0].clientY - y1;
+            if (Math.abs(disX) > 10 || Math.abs(disY) > 10) {
+                if (Math.abs(disX) > Math.abs(disY)) {                    
+                    this.move(this.arr, disX > 0 ? true : false);
+                } else {
+                    this.move(this.getV2HArr(this.arr), disY > 0 ? true : false, true);
+                }
             }
         })
     }
 
+    isEqual(arr1, arr2) {
+        if (arr1.length != arr2.length) {
+            return false;
+        }
+        arr1.sort();
+        arr2.sort();
+        for (let i = 0,len = arr1.length;i < len; i++) {
+            if (arr1[i] != arr2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    isGameOver() {
+        let arr = this.arr;
+        for (let i = 0, len = arr.length; i < len; i++) {
+            for (let j = 0; j < len; j++) {
+                if (j != 0 && arr[i][j].value == arr[i][j-1].value) {
+                    return false;
+                }
+                if (j < len - 1 && arr[i][j].value == arr[i][j+1].value) {
+                    return false;
+                }
+                if (i != 0 && arr[i][j].value == arr[i-1][j].value) {
+                    return false;
+                }
+                if (i < len - 1 && arr[i][j].value == arr[i+1][j].value) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     setEmptyValue() {
-        if (!this.ePos.length) {
-            // @need game over judge
+        if (!this.ePos.length && this.isGameOver()) {
+            alert('game over');
+            return;
+        }
+        if (this.isEqual(this.oldPos, this.ePos)) {
             return;
         }
         let i = Math.floor(Math.random() * this.ePos.length),
@@ -103,8 +150,9 @@ export default class Game2048 {
     }
 
     // 往左滑正，往右反；往上滑正，往下滑反。
-    move(wholeArr, reverse) {
+    move(wholeArr, reverse, isY) {
         let arr = [];
+        this.oldPos = this.ePos.map(item => item);
         this.ePos.length = 0;
         this.itemW = this.getItemW();
         if (!this.els) {
@@ -112,31 +160,36 @@ export default class Game2048 {
         }
         for (let i = 0, len = wholeArr.length; i < len; i++) {
             arr = wholeArr[i];
-            this.computeRowArr(arr, i, reverse);
+            this.computeRowArr(arr, i, reverse, isY);
             arr.forEach((v, j) => {
                 if (!v.newValue) {
-                    this.ePos.push(`${i},${j}`);
+                    if (!isY) {                        
+                        this.ePos.push(`${i},${j}`);
+                    } else {
+                        this.ePos.push(`${j},${i}`);
+                    }
                 }
             })
         }
         setTimeout(() => {
             this.setEmptyValue();
-        }, this.opts.time * 1.5)
+        }, this.opts.time * 2)
     }
 
     getV2HArr(arr) {
         let newArr = [];
-        for (let i = 0, len = arr.length; i < len; i++) {
-
+        for (let col = 0, len = arr.length; col < len; col++) {
+            if (!newArr[col]) {
+                newArr[col] = [];
+            }
+            for (let row = 0, len = arr.length; row < len; row++) {                
+                newArr[col].push(arr[row][col]);
+            }
         }
-
+        return newArr;
     }
 
-    moveVertical() {
-
-    }
-
-    computeRowArr(arr, row, reverse) {
+    computeRowArr(arr, row, reverse, isY) {
         let temp = arr.map(v => {
             return v.value;
         })
@@ -151,8 +204,7 @@ export default class Game2048 {
         temp.forEach((v, i) => {
             arr[i].newValue = v;
             arr[i].transDis = reverse ? arr[i].num * this.itemW : -arr[i].num * this.itemW;
-            this.setAnimation(arr[i], row * this.arr.length + i);
-            this.opts.redraw && this.opts.redraw(row, i);
+            this.setAnimation(arr[i], isY ? i * this.arr.length + row : row * this.arr.length + i, isY);
         })
     }
 
@@ -238,7 +290,7 @@ export default class Game2048 {
         }
     }
 
-    setAnimation(item, index) {
+    setAnimation(item, index, isY) {
         if (!(item.value || item.newValue)) {
             return;
         }
@@ -262,7 +314,7 @@ export default class Game2048 {
         }
         this.els[index].addEventListener('transitionend', handle)
         requestAnimationFrame(() => {
-            this.els[index].style.transform = `translateX(${item.transDis}px)`;
+            this.els[index].style.transform = `${isY ? 'translateY' : 'translateX'}(${item.transDis}px)`;
         })
     }
 

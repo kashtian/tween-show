@@ -14,6 +14,9 @@ export default {
 
     mounted() {
         this.init();
+        document.addEventListener('touchmove', function(event) {
+            event.preventDefault();
+        })
     },
 
     methods: {
