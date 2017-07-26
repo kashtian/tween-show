@@ -6,6 +6,7 @@
         background-color: red;
         display: inline-block;
         .item {
+            position: relative;
             display: inline-block;
             vertical-align: top;
             font-size: 16px;
@@ -32,12 +33,20 @@
 
 @keyframes scaleIn {
     0% {
-        transform: scale(0);
-    }
-    50% {
-        transform: scale(1.2);
+        transform: scale(1.1);
     }
     100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0)
+    }
+    100% {
+        opacity: 1;
         transform: scale(1);
     }
 }

@@ -14,7 +14,7 @@ export default class Game2048 {
             min: 2,
             row: 4,
             el: '.item',
-            time: 200
+            time: 150
         }, options);
 
         this.init();
@@ -91,7 +91,13 @@ export default class Game2048 {
 
         item.value = this.opts.min;
         if (this.els) {
-            this.els[row * this.arr.length + col].style.animation = `scaleIn ${this.opts.time}ms`;
+            let el = this.els[row * this.arr.length + col];
+            el.style.animation = `fadeIn ${this.opts.time}ms`;
+            function handle() {
+                this.style.animation = '';
+                this.removeEventListener('animationend', handle);
+            }
+            el.addEventListener('animationend', handle);
         }
         this.ePos.splice(i, 1);
     }
@@ -115,7 +121,7 @@ export default class Game2048 {
         }
         setTimeout(() => {
             this.setEmptyValue();
-        }, this.opts.time * 1.2)
+        }, this.opts.time * 1.5)
     }
 
     getV2HArr(arr) {
@@ -131,35 +137,38 @@ export default class Game2048 {
     }
 
     computeRowArr(arr, row, reverse) {
+        let temp = arr.map(v => {
+            return v.value;
+        })
+
+        if (reverse) {
+            this.mergeToRight(temp, arr);
+        } else {
+            this.mergeToLeft(temp, arr);
+        }
+
+        this.fillArr(temp, reverse);
+        temp.forEach((v, i) => {
+            arr[i].newValue = v;
+            arr[i].transDis = reverse ? arr[i].num * this.itemW : -arr[i].num * this.itemW;
+            this.setAnimation(arr[i], row * this.arr.length + i);
+            this.opts.redraw && this.opts.redraw(row, i);
+        })
+    }
+
+    mergeToLeft(temp, arr) {
         let i = 0,
             cur = null,
             next = null,
             //每个元素应该移动的位置个数
-            num = 0,
-            index = 0,
-            temp = arr.map(v => {
-                return v.value;
-            })
+            num = 0;
 
-        if (reverse) {
-            i = arr.length - 1;
-        }
-
-        while (reverse ? i >= 0 : i < temp.length) {
+        while (i < temp.length) {
             if (!temp[i]) {
                 num++;
                 temp.splice(i, 1);
 
-                if (!reverse) {
-                    index = i + num - 1;
-                } else {
-                    if (cur != null) {
-                        cur--;
-                    }
-                    index = i;
-                    i--;
-                }
-                arr[index].num = arr[index].value ? num : 0;
+                arr[i + num - 1].num = arr[i + num - 1].value ? num : 0;
                 continue;
             }
             if (cur == null) {
@@ -167,23 +176,11 @@ export default class Game2048 {
             } else {
                 next = i;
             }
-            if (!reverse) {
-                arr[cur + num].num = num;
-            } else {
-                arr[cur].num = num;
-            }
+            arr[cur + num].num = arr[cur + num].value ? num : 0;
             if (next != null) {
-                if (!reverse) {
-                    arr[next + num].num = num;
-                } else {
-                    arr[next].num = num;
-                }
+                arr[next + num].num = arr[next + num].value ? num : 0;
                 if (temp[cur] == temp[next]) {
-                    if (!reverse) {
-                        arr[cur].isMerge = true;
-                    } else {
-                        arr[cur + num].isMerge = true;
-                    }
+                    arr[cur].isMerge = true;
                     temp[cur] += temp[next];
                     temp[next] = 0;
                     cur = null;
@@ -194,20 +191,51 @@ export default class Game2048 {
                     next = null;
                 }
             }
-            if (reverse) {
-                i--;
-            } else {
-                i++;
-            }
+            i++;
         }
+    }
 
-        this.fillArr(temp, reverse);
-        temp.forEach((v, i) => {
-            arr[i].newValue = v;
-            arr[i].transDis = reverse ? arr[i].num * this.itemW : -arr[i].num * this.itemW;
-            this.setAnimation(arr[i], row * this.arr.length + i);
-            this.opts.redraw && this.opts.redraw(row, i);
-        })
+    mergeToRight(temp, arr) {
+        let i = arr.length - 1,
+            cur = null,
+            next = null,
+            //每个元素应该移动的位置个数
+            num = 0;
+
+        while (i >= 0) {
+            if (!temp[i]) {
+                num++;
+                temp.splice(i, 1);
+
+                if (cur != null) {
+                    cur--;
+                }
+                arr[i].num = arr[i].value ? num : 0;
+                i--;
+                continue;
+            }
+            if (cur == null) {
+                cur = i;
+            } else {
+                next = i;
+            }
+            arr[cur].num = arr[cur].value ? num : 0;
+            if (next != null) {
+                arr[next].num = arr[next].value ? num : 0;
+                if (temp[cur] == temp[next]) {
+                    arr[cur + num].isMerge = true;
+                    temp[cur] += temp[next];
+                    temp[next] = 0;
+                    cur = null;
+                    next = null;
+                    continue;
+                } else {
+                    cur = next;
+                    next = null;
+                }
+            }
+            i--;
+        }
     }
 
     setAnimation(item, index) {
@@ -222,8 +250,13 @@ export default class Game2048 {
             item.value = item.newValue;
             item.num = item.newValue = 0;
             if (item.isMerge) {
-                // this.style.animation = `scaleIn ${opts.time}ms`;
+                this.style.animation = `scaleIn ${opts.time}ms ease-in`;
                 item.isMerge = false;
+                function animationhandle() {
+                    this.style.animation = '';
+                    this.removeEventListener('animationend', animationhandle);
+                }
+                this.addEventListener('animationend', animationhandle);
             }
             this.removeEventListener('transitionend', handle);
         }

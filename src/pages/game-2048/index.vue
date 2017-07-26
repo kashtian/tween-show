@@ -8,7 +8,7 @@
             </div>
             <div class="box-2048">
                 <template class="item-wrapper" v-for="subArr in arr">
-                    <div :class="{item: true, color: item.value}" :style="{transform: 'translateX(' + item.transX + 'px)'}" v-for="item in subArr">{{item.value || ''}}</div>
+                    <div :class="{item: true, color: item.value}" :style="{'z-index': item.isMerge ? 2 : 1}" :data-item="JSON.stringify(item)" v-for="item in subArr">{{item.value || ''}}</div>
                 </template>
             </div>
         </div>
