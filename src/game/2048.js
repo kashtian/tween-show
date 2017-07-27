@@ -123,8 +123,10 @@ export default class Game2048 {
     }
 
     setEmptyValue() {
-        if (!this.ePos.length && this.isGameOver()) {
-            alert('game over');
+        if (!this.ePos.length) {
+            if (this.isGameOver()) {                
+                alert('game over');
+            }
             return;
         }
         if (this.isEqual(this.oldPos, this.ePos)) {
@@ -173,6 +175,7 @@ export default class Game2048 {
         }
         setTimeout(() => {
             this.setEmptyValue();
+            console.log('sssss');
         }, this.opts.time * 2)
     }
 
@@ -294,6 +297,7 @@ export default class Game2048 {
         if (!(item.value || item.newValue)) {
             return;
         }
+        let self = this;
         let opts = this.opts;
         this.els[index].style.transition = `transform ${opts.time}ms`;
         function handle() {
@@ -316,6 +320,16 @@ export default class Game2048 {
         requestAnimationFrame(() => {
             this.els[index].style.transform = `${isY ? 'translateY' : 'translateX'}(${item.transDis}px)`;
         })
+    }
+
+    // 判断是否所有元素的transition都结束了
+    isAllEnd() {
+        let flag = this.arr.some(item => {
+            return item.some(v => {
+                return !!v.num;
+            })
+        })
+        return !flag
     }
 
     fillArr(arr, reverse) {
