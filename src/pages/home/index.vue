@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="typing">this is home page!!!</div>
+        <router-link to="/2048">2048 game</router-link>
         <canvas id="bezier" ref="canvas"></canvas>
         <canvas id="scene" ref="scene" width="500px" height="500px"></canvas>
         <svg width="500" height="300">

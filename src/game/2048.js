@@ -175,7 +175,6 @@ export default class Game2048 {
         }
         setTimeout(() => {
             this.setEmptyValue();
-            console.log('sssss');
         }, this.opts.time * 2)
     }
 
@@ -197,11 +196,7 @@ export default class Game2048 {
             return v.value;
         })
 
-        if (reverse) {
-            this.mergeToRight(temp, arr);
-        } else {
-            this.mergeToLeft(temp, arr);
-        }
+        this.merge(temp, arr, reverse);
 
         this.fillArr(temp, reverse);
         temp.forEach((v, i) => {
@@ -211,12 +206,21 @@ export default class Game2048 {
         })
     }
 
-    mergeToLeft(temp, arr) {
+    merge(temp, arrSrc, isReverse) {
         let i = 0,
             cur = null,
             next = null,
             //每个元素应该移动的位置个数
-            num = 0;
+            num = 0,
+            arr = arrSrc;
+            
+        if (isReverse) {
+            temp.reverse();
+            arr = arrSrc.map(v => {
+                return {value: v.value}
+            })
+            arr.reverse();
+        }
 
         while (i < temp.length) {
             if (!temp[i]) {
@@ -248,48 +252,13 @@ export default class Game2048 {
             }
             i++;
         }
-    }
-
-    mergeToRight(temp, arr) {
-        let i = arr.length - 1,
-            cur = null,
-            next = null,
-            //每个元素应该移动的位置个数
-            num = 0;
-
-        while (i >= 0) {
-            if (!temp[i]) {
-                num++;
-                temp.splice(i, 1);
-
-                if (cur != null) {
-                    cur--;
-                }
-                arr[i].num = arr[i].value ? num : 0;
-                i--;
-                continue;
-            }
-            if (cur == null) {
-                cur = i;
-            } else {
-                next = i;
-            }
-            arr[cur].num = arr[cur].value ? num : 0;
-            if (next != null) {
-                arr[next].num = arr[next].value ? num : 0;
-                if (temp[cur] == temp[next]) {
-                    arr[cur + num].isMerge = true;
-                    temp[cur] += temp[next];
-                    temp[next] = 0;
-                    cur = null;
-                    next = null;
-                    continue;
-                } else {
-                    cur = next;
-                    next = null;
-                }
-            }
-            i--;
+        if (isReverse) {
+            temp.reverse();
+            arr.reverse();
+            arr.forEach((v, i) => {
+                arrSrc[i].num = v.num;
+                arrSrc[i].isMerge = v.isMerge;
+            })
         }
     }
 
