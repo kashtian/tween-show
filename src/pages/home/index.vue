@@ -1,6 +1,12 @@
 <template>
     <div>
         <div class="typing">this is home page!!!</div>
+        <test>
+            <template scope="test">
+            <div>{{test.bb}}</div>
+            <div>{{test.text}}</div>
+            </template>
+        </test>
         <router-link to="/2048">2048 game</router-link>
         <canvas id="bezier" ref="canvas"></canvas>
         <canvas id="scene" ref="scene" width="500px" height="500px"></canvas>

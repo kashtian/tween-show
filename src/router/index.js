@@ -9,7 +9,10 @@ function generateRoutes(pages) {
     for (let key in pages) {
         routes.push({
             path: pages[key].route.path,
-            component: pages[key]
+            component: pages[key],
+            meta: {
+                title: pages[key].route.title
+            }
         })
     }
     return routes;

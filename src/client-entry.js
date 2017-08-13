@@ -1,4 +1,9 @@
-import {app, store} from './main';
+import {app, store, router} from './main';
+
+router.beforeEach((to, from, next) => {
+    document.title = to.meta.title;
+    next();
+})
 
 store.replaceState(window.__INITIAL_STATE__);
 

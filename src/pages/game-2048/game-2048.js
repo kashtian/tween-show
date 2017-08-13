@@ -4,7 +4,8 @@ import Vue from 'vue';
 export default {
     name: 'game-2048',
     route: {
-        path: '/2048'
+        path: '/2048',
+        title: '2048小游戏'
     },
     data() {
         return {

@@ -2,6 +2,7 @@ import bezier from '../../tween/cubic-bezier';
 import { MatchMan } from '../../matchMan';
 import pushMsg from '../../push-msg';
 import { pushHost } from '../../../config/sys.config';
+import {Test} from '../../components';
 
 export default {
     name: 'home',
@@ -15,6 +16,10 @@ export default {
       return {
         arr: [1,2,3,4,5,6]
       }
+    },
+
+    components: {
+        Test
     },
 
     mounted() {
