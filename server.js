@@ -49,7 +49,7 @@ if (process.argv.indexOf('--development') > -1) {
     app.use('/static', express.static(path.resolve(process.cwd(), 'dist/static')));
 }
 
-app.get('*', (req, res) => {
+app.get('/test', (req, res) => {
     if(!renderer) {
         return res.end('waiting for compilation... refresh in a moment.');
     }
