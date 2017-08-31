@@ -1,3 +1,5 @@
+import Game from '../../game/canvas-game.js';
+
 export default {
     name: 'doll',
     route: {
@@ -16,9 +18,7 @@ export default {
                 ch: 473
             }, this.options),
             swingTime: 500,
-            dolls: [],
-            cache: {},
-            queue: []
+            dolls: []
         }
     },
 
@@ -28,15 +28,43 @@ export default {
 
     methods: {
         init() {
-            this.canvas = this.$refs.stage;
-            this.ctx = this.canvas.getContext('2d');
-            this.canvas.width = this.opts.cw;
-            this.canvas.height = this.opts.ch;
+            this.dGame = new Game({
+                parent: '.doll-game',
+                cw: this.opts.cw,
+                ch: this.opts.ch
+            })
+            this.dGame.addEvent('click', event => {
+                this.catchDoll(event);
+            })
+            this.ctx = this.dGame.ctx;
+            this.initDolls();
             this.draw(true, true);
         },
 
-        clear() {
-            this.ctx.clearRect(0, 0, this.opts.cw, this.opts.ch);
+        initDolls() {
+            let dollw = 78,
+                dollh = 112,
+                count = 6,
+                half = count / 2,
+                x = 15,
+                y = this.opts.ch / 2 - dollh + 20,
+                margin = (this.opts.cw - x * 2 - dollw * half) / (half - 1),
+                dx = 0,
+                dy = 0;
+                this.dolls.length = 0;
+
+                for (let i = 0; i < count; i++) {
+                    dx = x + (i % half) * (dollw + margin);
+                    dy = i < half ? y : y + dollh + 10;                    
+                    this.dolls.push({
+                        x: [dx, dx + dollw],
+                        y: [dy, dy + dollh],
+                        dx: dx,
+                        dy: dy,
+                        w: dollw,
+                        h: dollh
+                    })
+                }
         },
 
         stopSwing() {
@@ -44,7 +72,7 @@ export default {
         },
 
         draw(isSwing, isClose) {
-            this.clear();
+            this.dGame.clear();
             isClose = !isClose;
             this.loadBg();
             this.loadDoll();
@@ -57,19 +85,19 @@ export default {
         },
 
         loadBg() {
-            this.loadImage({
-                url: '/images/bg_main.png',
-                w: this.opts.cw,
-                h: this.opts.ch
+            this.dGame.loadImage('/images/bg_main.png').then(img => {
+                this.ctx.drawImage(img, 0, 0, this.opts.cw, this.opts.ch);
             })
         },
 
         catchDoll(event) {
+            if (!this.dGame.isAnimateEnd()) {
+                return;
+            }
             let doll = null, item = null, index = null;
             for (let i = 0; i < this.dolls.length; i++) {
                 item = this.dolls[i];
                 if (event.offsetX >= item.x[0] && event.offsetX <= item.x[1] && event.offsetY >= item.y[0] && event.offsetY <= item.y[1]) {
-                    console.log('item: ', item);
                     index = i;
                     doll = {x: item.x[0], y: item.y[0]};
                     break;
@@ -79,16 +107,16 @@ export default {
                 return;
             }
             this.stopSwing();
-            this.clear();
+            this.dGame.clear();
             this.loadBg();
             this.loadDoll();
             this.moveToTarget(doll, index);
         },
 
         moveToTarget(pos, index) {
-            this.addAnimation({
+            this.dGame.animate({
                 cb: (v) => {
-                    this.clear();
+                    this.dGame.clear();
                     this.loadBg();
                     this.loadDoll();
                     this.drawClaws({
@@ -99,9 +127,9 @@ export default {
                 vt: pos.x - (108 - 78)/2,
                 time: (index == 1 || index == 4) ? 0 : 2000
             })
-            this.addAnimation({
+            this.dGame.animate({
                 cb: (v) => {
-                    this.clear();
+                    this.dGame.clear();
                     this.loadBg();
                     this.loadDoll();
                     this.drawClaws({
@@ -113,9 +141,9 @@ export default {
                 vt: pos.y - 152 / 2 - 15,
                 time: 2000
             })
-            this.addAnimation({
+            this.dGame.animate({
                 cb: (v) => {
-                    this.clear();
+                    this.dGame.clear();
                     this.loadBg();
                     this.loadDoll(index, v);
                     this.drawClaws({
@@ -128,76 +156,16 @@ export default {
                 vt: 15,
                 time: 2000
             })
-            this.startAnimation();
-        },
-
-        addAnimation(opts) {
-            this.queue.push(opts);
-        },
-
-        startAnimation() {
-            if (this.queue.length) {
-                let opts = this.queue.shift();
-                this.uniformMotion(opts);
-            }
-        },
-
-        uniformMotion(opts) {
-            let date = Date.now(),
-                dis = opts.vt - opts.v0,
-                a = dis / opts.time,
-                tDiff = 0,
-                uDis = 0;
-
-            function go() {
-                tDiff = Date.now() - date;
-                if (tDiff >= opts.time) {
-                    this.startAnimation();
-                    return;
-                } 
-                uDis = opts.v0 + a * tDiff;
-                if (a < 0 && uDis < opts.vt || (a > 0 && uDis > opts.vt)) {
-                    uDis = opts.vt;
-                }
-                opts.cb(uDis);
-                requestAnimationFrame(() => {
-                    go.call(this);
-                })
-            }
-            go.call(this);
         },
 
         loadDoll(index, v) {
-            let dollw = 78,
-                dollh = 112,
-                count = 6,
-                half = count / 2,
-                x = 15,
-                y = this.opts.ch / 2 - dollh + 20,
-                margin = (this.opts.cw - x * 2 - dollw * half) / (half - 1),
-                dx = 0,
-                dy = 0;
-                this.dolls.length = 0;
-
-            for (let i = 0; i < count; i++) {
-                dx = x + (i % half) * (dollw + margin);
-                if (i == index) {
-                    dy = v + dollh;
-                } else {
-                    dy = i < half ? y : y + dollh + 10;
-                }
-                this.dolls.push({
-                    x: [dx, dx + dollw],
-                    y: [dy, dy + dollh]
-                })
-                this.loadImage({
-                    url: i % 2 == 0 ? '/images/doll1.png' : '/images/doll2.png',
-                    x: dx,
-                    y: dy,
-                    w: dollw,
-                    h: dollh
-                })
-            }
+            let dy = 0, item = null;
+            this.dolls.forEach((item, i) => {
+                this.dGame.loadImage(i % 2 == 0 ? '/images/doll1.png' : '/images/doll2.png').then(img => {
+                    dy = i == index ? v + item.h : item.dy
+                    this.ctx.drawImage(img, item.dx, dy, item.w, item.h);
+                });
+            })
         },
 
         drawClaws(cOpts) {
@@ -209,62 +177,42 @@ export default {
 
             let sy = cOpts.isClose ? 152 : 0;
 
-            this.loadImage({
-                url: '/images/claws-top.png',
-                w: 36,
-                h: 15,
-                x: cOpts.x + (108 - 36) / 2,
-                y: 93
-            })
-            this.loadImage({
-                url: '/images/claws-line.png',
-                x: cOpts.x + (108 - 10) / 2,
-                y: 93 + 13,
-                w: 10,
-                h: cOpts.lh
-            })
-            this.loadImage({
-                url: '/images/claws.png',
-                sx: 0,
-                sy: sy,
-                sw: 216,
-                sh: 152,
-                dx: cOpts.x,
-                dy: 93 + 8 + cOpts.lh,
-                dw: 108,
-                dh: 152 / 2,
-                isSlice: true
-            })
-        },
+            // {
+            //     url: '/images/claws-top.png',
+            //     w: 36,
+            //     h: 15,
+            //     x: cOpts.x + (108 - 36) / 2,
+            //     y: 93
+            // }
 
-        loadImage(opts) {
-            opts = Object.assign({
-                x: 0,
-                y: 0
-            }, opts);
-            let ctx = this.ctx;
-            if (this.cache[opts.url]) {
-                if (opts.isSlice) {
-                    ctx.drawImage(this.cache[opts.url], opts.sx, opts.sy, opts.sw, opts.sh, opts.dx, opts.dy, opts.dw, opts.dh);
-                } else {
-                    ctx.drawImage(this.cache[opts.url], opts.x, opts.y, opts.w, opts.h);
-                }
-                return;
-            }
-            let img = new Image();
-            img.onload = () => {
-                this.cache[opts.url] = img;
-                if (opts.isSlice) {
-                    ctx.drawImage(img, opts.sx, opts.sy, opts.sw, opts.sh, opts.dx, opts.dy, opts.dw, opts.dh);
-                } else {
-                    ctx.drawImage(img, opts.x, opts.y, opts.w, opts.h);
-                }
-            }
-            img.onerror = (err) => {
-                console.log('img load error: ', err);
-            }
-            img.src = opts.url;
-        },
+            this.dGame.loadImage('/images/claws-top.png').then(img => {
+                this.ctx.drawImage(img, cOpts.x + (108 - 36) / 2, 93, 36, 15);
+            })
+            // {
+            //     url: '/images/claws-line.png',
+            //     x: cOpts.x + (108 - 10) / 2,
+            //     y: 93 + 13,
+            //     w: 10,
+            //     h: cOpts.lh
+            // }
+            this.dGame.loadImage('/images/claws-line.png').then(img => {
+                this.ctx.drawImage(img, cOpts.x + (108 - 10) / 2, 93 + 13, 10, cOpts.lh);
+            })
+            // {
+            //     url: '/images/claws.png',
+            //     sx: 0,
+            //     sy: sy,
+            //     sw: 216,
+            //     sh: 152,
+            //     dx: cOpts.x,
+            //     dy: 93 + 8 + cOpts.lh,
+            //     dw: 108,
+            //     dh: 152 / 2
+            // }
+            this.dGame.loadImage('/images/claws.png').then(img => {
+                this.ctx.drawImage(img, 0, sy, 216, 152, cOpts.x, 93 + 8 + cOpts.lh, 108, 152 / 2);
+            })
+        }
 
     }
 }

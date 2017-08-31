@@ -1,6 +1,6 @@
 <template>
   <div class="doll-game">
-      <canvas ref="stage" class="stage" @click="catchDoll"></canvas>
+      
   </div>
 </template>
 
