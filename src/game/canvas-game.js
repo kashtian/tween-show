@@ -27,6 +27,8 @@ export default class Game {
 
         canvas.width = this.opts.cw;
         canvas.height = this.opts.ch;
+        canvas.style.display = 'block';
+        canvas.style.margin = '0px auto';
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         parent.appendChild(canvas);
