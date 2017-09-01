@@ -12,6 +12,10 @@ export default class Game {
         this.imgCache = {};
         // 动画是否正在进行中
         this.isAnimating = false;
+        // 重新开始动画的时间
+        this.pauseTime = 0;
+        // 动画暂停到重新运行经过的时间
+        this.pauseDiff = 0;
 
         this.init();
     }
@@ -26,6 +30,18 @@ export default class Game {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         parent.appendChild(canvas);
+
+        // 监听页面是否切换到后台，记录时间间隔以重绘动画
+        document.addEventListener('visibilitychange', () => {
+            if (this.isAnimateEnd()) {
+                return;
+            }
+            if (document['hidden']) {
+                this.pauseAnimation();
+            } else {
+                this.resume && this.resume();
+            }
+        })
     }
 
     // 清除canvas
@@ -52,6 +68,16 @@ export default class Game {
         })
     }
 
+    // 记录页面切换到后台时的时间
+    pauseAnimation() {
+        this.pauseTime = Date.now();
+    }
+
+    // 记录页面从后台切换回来经过的时间
+    resume() {
+        this.pauseDiff += (Date.now() - this.pauseTime);
+    }
+
     // 动画函数(匀速动画)
     animate(opts) {
         if (this.isAnimating) {
@@ -59,6 +85,8 @@ export default class Game {
             return;
         }
         this.isAnimating = true;
+        this.pauseDiff = 0;
+        this.pauseTime = 0;
         let date = Date.now(),
             dis = opts.vt - opts.v0,
             a = dis / opts.time,
@@ -66,7 +94,7 @@ export default class Game {
             uDis = 0;
 
         function go() {
-            tDiff = Date.now() - date;
+            tDiff = Date.now() - this.pauseDiff - date;
             if (tDiff >= opts.time) {
                 this.isAnimating = false;
                 this.runQueue();
