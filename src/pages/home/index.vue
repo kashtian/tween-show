@@ -8,6 +8,9 @@
             </template>
         </test>
         <router-link to="/2048">2048 game</router-link>
+        <div>
+        <router-link to="/doll">抓娃娃游戏</router-link>
+        </div>
         <canvas id="bezier" ref="canvas"></canvas>
         <canvas id="scene" ref="scene" width="500px" height="500px"></canvas>
         <svg width="500" height="300">
