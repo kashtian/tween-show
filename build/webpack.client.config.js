@@ -20,7 +20,7 @@ if (process.argv.indexOf('--development') > -1) {
 }
 
 const devConfig = {
-    devtool: '#source-map',
+    devtool: 'source-map',
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         //跳过编译中出错的模块

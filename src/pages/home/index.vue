@@ -11,6 +11,9 @@
         <div>
         <router-link to="/doll">抓娃娃游戏</router-link>
         </div>
+        <div>
+        <router-link to="/bm">报名</router-link>
+        </div>
         <canvas id="bezier" ref="canvas"></canvas>
         <canvas id="scene" ref="scene" width="500px" height="500px"></canvas>
         <svg width="500" height="300">
@@ -96,14 +99,7 @@
                         attributeName="d" 
                         dur="1440ms" 
                         repeatCount="indefinite"
-                        keyTimes="0;
-                                .0625;
-                                .208333333;
-                                .3125;
-                                .395833333;
-                                .645833333;
-                                .833333333;
-                                1"
+                        keyTimes="0;.0625;.208333333;.3125;.395833333;.645833333;.833333333;1"
                         calcMode="linear" 
                         values="M 0,0 
                                 C 50,0 50,0 100,0
