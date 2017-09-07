@@ -107,11 +107,19 @@ export default class Game {
                 uDis = opts.vt;
             }
             opts.cb(uDis);
-            requestAnimationFrame(() => {
+            opts.aid = requestAnimationFrame(() => {
                 go.call(this);
             })
         }
         go.call(this);
+    }
+
+    // 清除动画队列
+    clearQueue() {
+        this.queue.forEach(item => {
+            cancelAnimationFrame(item.aid);
+        })
+        this.queue.length = 0;
     }
 
     // 执行动画队列

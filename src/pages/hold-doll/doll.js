@@ -28,6 +28,7 @@ export default {
 
     beforeDestroy() {
         this.stopSwing();
+        this.dGame.clearQueue();
     },
 
     methods: {
