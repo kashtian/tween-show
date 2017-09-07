@@ -26,6 +26,10 @@ export default {
         this.init();
     },
 
+    beforeDestroy() {
+        this.stopSwing();
+    },
+
     methods: {
         init() {
             this.dGame = new Game({
