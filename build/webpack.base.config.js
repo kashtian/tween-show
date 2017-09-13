@@ -15,7 +15,7 @@ module.exports = {
     output: {
         path: path.join(process.cwd(), 'dist/static'),
         filename: '[name].[chunkhash:7].js',
-        publicPath: '/static'
+        publicPath: '/static/'
     },
 
     resolve: {
