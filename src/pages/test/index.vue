@@ -8,6 +8,10 @@
         <br/>
         <button @click="openDg3(2)">打开图片弹窗1-2</button>
         <br/>
+         <button @click="openDg4('one')">打开背景图片弹窗1-1</button>
+        <br/>
+        <button @click="openDg4('two')">打开背景图片弹窗1-2</button>
+        <br/>
         <button @click="openDg2">打开弹窗2</button>
         <div class="pop" v-show="isShowDg1">
             <div class="content">
@@ -24,7 +28,13 @@
         <div class="pop" v-show="isShowDg3">
             <div class="content">
                 <img :src="img" class="img"/>
-                <button @click="closeDg1">点我关闭</button>
+                <button @click="closeDg3">点我关闭</button>
+            </div>
+        </div>
+        <div class="pop" v-show="isShowDg4">
+            <div class="content">
+                <div class="bg" :class="type"></div>
+                <button @click="closeDg4">点我关闭</button>
             </div>
         </div>
     </div>

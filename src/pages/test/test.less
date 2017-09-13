@@ -8,9 +8,19 @@
         padding: 30px;
         border: 1px solid #000;
         transform: translate(-50%, -50%);
-        .img {
+        .img, .bg {
             width: 200px;
             height: 180px;
+        }
+        .bg {
+            background: no-repeat  center;
+            background-size: 100%;
+            &.one {
+                background-image: url('./img/one.png');
+            }
+            &.two {
+                background-image: url('./img/two.png');
+            }
         }
     }
 }

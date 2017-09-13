@@ -11,7 +11,9 @@ export default {
             isShowDg1: false,
             isShowDg2: false,
             isShowDg3: false,
+            isShowDg4: false,
             img: null,
+            type: 'one',
             dg1Content: '',
         }
     },
@@ -45,6 +47,15 @@ export default {
 
         closeDg3() {
             this.isShowDg3 = false;
+        },
+
+        openDg4(type) {
+            this.isShowDg4 = true;
+            this.type = type;
+        },
+
+        closeDg4() {
+            this.isShowDg4 = false;
         },
         
     }
