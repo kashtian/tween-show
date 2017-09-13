@@ -46,7 +46,7 @@ if (process.argv.indexOf('--development') > -1) {
     const indexTplPath = path.resolve(process.cwd(), './dist/static/index.html');
     renderer = createRenderer(fs.readFileSync(bundlePath, 'utf-8'));
     indexHtml = parseIndex(fs.readFileSync(indexTplPath, 'utf-8'));
-    app.use('/static', express.static(path.resolve(process.cwd(), 'dist/static')));
+    app.use('/static', express.static(path.resolve(process.cwd(), 'dist/static/')));
 }
 
 app.get('*', (req, res) => {
