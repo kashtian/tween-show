@@ -10,7 +10,9 @@ export default {
         return {
             isShowDg1: false,
             isShowDg2: false,
-            dg1Content: ''
+            isShowDg3: false,
+            img: null,
+            dg1Content: '',
         }
     },
 
@@ -30,6 +32,19 @@ export default {
 
         closeDg2() {
             this.isShowDg2 = false;
+        },
+
+        openDg3(type) {
+            this.isShowDg3 = true;
+            if (type == 1) {
+                this.img = require('./img/one.png');
+            } else {
+                this.img = require('./img/two.png');
+            }
+        },
+
+        closeDg3() {
+            this.isShowDg3 = false;
         },
         
     }
