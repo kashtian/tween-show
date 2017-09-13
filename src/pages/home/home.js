@@ -14,7 +14,10 @@ export default {
 
     data() {
       return {
-        arr: [1,2,3,4,5,6]
+        arr: [1,2,3,4,5,6],
+        img: null,
+        isloading: false,
+        time: 0
       }
     },
 
@@ -37,6 +40,21 @@ export default {
     },
 
     methods: {
+        upload(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            this.isloading = true;
+            let date = Date.now();
+            reader.onloadend = () => {
+                this.img = reader.result;
+                this.isloading = false;
+                this.time = Date.now() - date;
+            }
+            reader.readAsDataURL(file);
+            //this.img = file.
+            console.log('event: ', file);
+        },
+
         createMatchMan() {
             let canvas = this.$refs.scene;
             let matchMan = new MatchMan(canvas.getContext('2d'));

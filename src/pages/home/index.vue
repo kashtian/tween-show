@@ -1,6 +1,12 @@
 <template>
     <div>
         <div class="typing">this is home page!!!</div>
+        <div>
+            <input type="file" @change="upload"/>
+            <div style="fontSize: 40px" v-show="isloading">image is loading</div>
+            <img :src="img" class="img" />
+            <div>time: {{time}}</div>
+        </div>
         <test>
             <template scope="test">
             <div>{{test.bb}}</div>
@@ -10,6 +16,9 @@
         <router-link to="/2048">2048 game</router-link>
         <div>
         <router-link to="/doll">抓娃娃游戏</router-link>
+        </div>
+        <div>
+        <router-link to="/test">打开测试页面</router-link>
         </div>
         <div>
         <router-link to="/bm">报名</router-link>
