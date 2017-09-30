@@ -10,6 +10,8 @@
       <div>
           <button @click="baoming">我要报名</button>
       </div>
+
+      <picker />
   </div>
 </template>
 
