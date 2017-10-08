@@ -38,7 +38,7 @@ export default {
                 }
                 this.list[i].deg = deg * i;
                 this.list[i].style = `transform: rotateX(${-deg * i}deg) translateZ(${this.r}px);`;
-
+                
                 this.test.push(this.list[i]);
             }
         },
@@ -79,7 +79,7 @@ export default {
                 time = 100;
             } else {
                 dis = dis * 2;
-                time = 2000;
+                time = 1000;
             }
             if (dis < 0) {
                 dis = 0;
@@ -87,11 +87,47 @@ export default {
                 dis = 900;
             }
             this.curIndex = Math.round(Math.abs(dis) / this.getDeg());
-            this.realDis = this.dis = (dis > 0 ? this.curIndex * this.getDeg() : -this.curIndex * this.getDeg());
-            this.boxStyle = {
-                transform: `rotateX(${this.dis}deg) rotateY(0deg)`,
-                transition: `transform ${time}ms`
+            this.animate({
+                v0: this.realDis,
+                vt:  (dis > 0 ? this.curIndex * this.getDeg() : -this.curIndex * this.getDeg()),
+                time: time,
+                cb: (value) => {                  
+                    this.realDis = this.dis = value;
+                    this.boxStyle = {
+                        transform: `rotateX(${this.dis}deg) rotateY(0deg)`
+                    }
+                }
+            })
+        },
+
+        animate(opts) {
+            let date = Date.now(),
+                dis = opts.vt - opts.v0,
+                a = dis / opts.time,
+                tDiff = 0,
+                uDis = 0;
+                console.log('v0: ', opts.v0);
+                console.log('vt: ', opts.vt)
+    
+            function go() {
+                console.log('go');
+                tDiff = Date.now() - date;
+                if (tDiff >= opts.time) {
+                    uDis = opts.vt;
+                    opts.cb(uDis);
+                    return;
+                } 
+                uDis = opts.v0 + a * tDiff;
+                if (a < 0 && uDis < opts.vt || (a > 0 && uDis > opts.vt)) {
+                    uDis = opts.vt;
+                }
+                console.log('uDis: ', uDis);
+                opts.cb(uDis);
+                opts.aid = requestAnimationFrame(() => {
+                    go.call(this);
+                })
             }
+            go.call(this);
         }
     }
 }
