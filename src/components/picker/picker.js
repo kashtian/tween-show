@@ -54,6 +54,7 @@ export default {
         },
 
         move(event) {
+            event.preventDefault();
             let touch = event.changedTouches[0],
                 dis = this.dis + this.startY - touch.screenY;
 
@@ -73,12 +74,15 @@ export default {
 
         end(event) {
             let touch = event.changedTouches[0],
-                dis = this.dis + this.startY - touch.screenY,
-                time = 0;
+                oneDis = this.startY - touch.screenY,
+                dis = this.dis + oneDis,
+                time = 0,
+                total = 200;
+                
             if (Date.now() - this.startTime > 500) {
                 time = 100;
             } else {
-                dis = dis * 2;
+                dis = this.dis + (oneDis / total * 720);
                 time = 1000;
             }
             if (dis < 0) {
@@ -86,6 +90,7 @@ export default {
             } else if (dis > 900) {
                 dis = 900;
             }
+
             this.curIndex = Math.round(Math.abs(dis) / this.getDeg());
             this.animate({
                 v0: this.realDis,
@@ -103,25 +108,24 @@ export default {
         animate(opts) {
             let date = Date.now(),
                 dis = opts.vt - opts.v0,
-                a = dis / opts.time,
+                //a = dis / opts.time,
+                a = - 2 * dis / Math.pow(opts.time, 2),
+                test = -a * opts.time,
                 tDiff = 0,
                 uDis = 0;
-                console.log('v0: ', opts.v0);
-                console.log('vt: ', opts.vt)
     
             function go() {
-                console.log('go');
                 tDiff = Date.now() - date;
                 if (tDiff >= opts.time) {
                     uDis = opts.vt;
                     opts.cb(uDis);
                     return;
                 } 
-                uDis = opts.v0 + a * tDiff;
-                if (a < 0 && uDis < opts.vt || (a > 0 && uDis > opts.vt)) {
+                //uDis = opts.v0 + a * tDiff;
+                uDis = opts.v0 + test * tDiff + a * Math.pow(tDiff, 2) / 2;
+                if (dis < 0 && uDis < opts.vt || (dis > 0 && uDis > opts.vt)) {
                     uDis = opts.vt;
                 }
-                console.log('uDis: ', uDis);
                 opts.cb(uDis);
                 opts.aid = requestAnimationFrame(() => {
                     go.call(this);

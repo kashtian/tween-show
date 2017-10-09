@@ -2,7 +2,7 @@
     <div class="dir-picker" @touchstart="start" @touchmove="move" @touchend="end">
         <div class="line"></div>
         <ul class="list-wrapper" :style="boxStyle">
-            <li class="item" :class="{active: index == curIndex ,hidden: !(item.deg > Math.abs(realDis) -  180 && item.deg < Math.abs(realDis) + 180)}" v-for="(item,index) in test" :key="item.value" :style="item.style">{{item.value}}</li>
+            <li class="item" :class="{hidden: !(item.deg > Math.abs(realDis) -  180 && item.deg < Math.abs(realDis) + 180)}" v-for="(item,index) in test" :key="item.value" :style="item.style">{{item.value}}</li>
         </ul>
     </div>
 </template>
@@ -35,9 +35,6 @@
                 list-style: none;
                 backface-visibility: hidden;
                 visibility: visible;
-                &.active {
-                    color: red;
-                }
                 &.hidden {
                     visibility: hidden;
                 }
