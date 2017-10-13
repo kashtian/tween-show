@@ -1,7 +1,7 @@
 export default {
     name: 'picker',
 
-    props: ['list', 'value', 'options'],
+    props: ['list', 'value', 'options', 'displayFn', 'valueField', 'isPure'],
 
     data() {
         return {
@@ -106,7 +106,7 @@ export default {
                 s0: this.realY,
                 st:  (dis > 0 ? this.curIndex * this.unitDeg : -this.curIndex * this.unitDeg),
                 time: time,
-                cb: (value) => {                  
+                cb: (value, isEnd) => {                  
                     this.realY = this.scrollY = value;
                     this.boxStyle = {
                         transform: `rotateX(${this.scrollY}deg)`
@@ -137,7 +137,7 @@ export default {
                 tDiff = Date.now() - date;
                 if (tDiff >= opts.time) {
                     uDis = opts.st;
-                    opts.cb(uDis);
+                    opts.cb(uDis, true);
                     return;
                 } 
                 uDis = getMotionDis(opts.s0, tDiff);
@@ -150,6 +150,11 @@ export default {
                 })
             }
             go.call(this);
+        },
+
+        // 根据传入的值获取index
+        getIndex(value) {
+
         }
     
     }
