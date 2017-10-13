@@ -11,7 +11,7 @@
           <button @click="baoming">我要报名</button>
       </div>
 
-      <picker />
+      <picker :list="pList" />
   </div>
 </template>
 

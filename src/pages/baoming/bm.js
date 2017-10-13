@@ -11,9 +11,14 @@ export default {
         Picker
     },
 
+    created() {
+        this.initList();
+    },
+
     data() {
         return {
-            info: {}
+            info: {},
+            pList: []
         }
     },
 
@@ -29,6 +34,14 @@ export default {
                 _vds.push(['setCS4', 'tel', this.info.tel])
             }
             console.log('bao ming: ', this.info);
-        }
+        },
+
+        initList() {
+            for (let i = 0; i <= 50; i++) {
+                this.pList.push({
+                    value: i
+                })
+            }
+        },
     }
 }
