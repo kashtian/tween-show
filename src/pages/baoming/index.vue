@@ -10,8 +10,11 @@
       <div>
           <button @click="baoming">我要报名</button>
       </div>
+      <div>
+          picker value: {{this.pickerVal}}
+      </div>
 
-      <picker :list="pList" />
+      <picker :list="pList" :is-plain="true" v-model="pickerVal"/>
   </div>
 </template>
 

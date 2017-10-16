@@ -18,7 +18,8 @@ export default {
     data() {
         return {
             info: {},
-            pList: []
+            pList: [],
+            pickerVal: 25
         }
     },
 
@@ -38,9 +39,7 @@ export default {
 
         initList() {
             for (let i = 0; i <= 50; i++) {
-                this.pList.push({
-                    value: i
-                })
+                this.pList.push(i);
             }
         },
     }

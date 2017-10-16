@@ -1,7 +1,7 @@
 export default {
     name: 'picker',
 
-    props: ['list', 'value', 'options', 'displayFn', 'valueField', 'isPure'],
+    props: ['list', 'value', 'options', 'displayFn', 'valueField', 'nameField', 'isPlain'],
 
     data() {
         return {
@@ -11,6 +11,7 @@ export default {
                 r: 100,     // 半径
                 buffer: 30  // 到达边界的动画缓冲值
             }, this.options),
+            curValue: {},   // 当前选中的值
             boxStyle: null,
             curIndex: 0,
             scrollY: 0,     // 已经滚动的值
@@ -20,6 +21,7 @@ export default {
 
     mounted() {
         this.arr = this.initList();
+        this.setScrollByValue(this.value);
     },
 
     computed: {
@@ -36,6 +38,25 @@ export default {
         }
     },
 
+    watch: {
+        value(val) {
+            if (val) {
+                this.setScrollByValue(val);
+            }            
+        },
+
+        curValue(val) {
+            if (!val) {
+                return;
+            }
+            let curVal = this.getValue();
+            if (this.value == curVal) {
+                return;
+            }
+            this.$emit('input', curVal);
+        }
+    },
+
     methods: {
         // 遍历数组，设置每个元素的style, 形成以x为轴的圆形
         initList() {
@@ -49,8 +70,66 @@ export default {
                 obj.hidden = (deg * i > 180);
                 obj.deg = deg * i;
                 obj.style = `height: ${this.opts.itemH}px; margin-top: ${-this.opts.itemH / 2}px; transform: rotateX(${-deg * i}deg) translateZ(${this.opts.r}px);`;
-                return Object.assign({}, v, obj)
+                return Object.assign({}, this.isPlain ? {value: v} : v, obj)
             })
+        },
+
+        // 获取当前选项的名称
+        getName(val) {
+            if (this.nameField) {
+                return val[this.nameField];
+            } else if (typeof this.displayFn == 'function') {
+                return this.displayFn(val);
+            } else if (this.isPlain) {
+                return val.value;
+            }
+            return '';
+        },
+
+        // 获取当前选项的值
+        getValue() {
+            if (this.valueField) {
+                return this.curValue[this.valueField];
+            } else if (this.isPlain) {
+                return this.curValue.value;
+            }
+            return this.curValue;
+        },
+
+        // 根据传入的值获取index
+        getIndex(value) {
+            if (this.valueField || !this.isPlain) {
+                for (let i = 0; i < this.list.length; i++) {
+                    if (this.valueField) {
+                        if (value == this.list[i][this.valueField]) {
+                            return i;
+                        }
+                    } else {
+                        if (value == this.list[i]) {
+                            return i;
+                        }
+                    }                    
+                }
+                return -1;
+            } else {
+                return this.list.indexOf(value);
+            }
+        },
+
+        // 根据传入的值将picker滚动至相应的位置
+        setScrollByValue(val) {
+            let index = this.getIndex(val);
+            if (index > -1) {
+                this.scrollY = this.realY = index * this.unitDeg;
+                this.setBoxRotate(this.realY);
+            }
+        },
+
+        // 设置容器的旋转角度
+        setBoxRotate(deg) {
+            this.boxStyle = {
+                transform: `rotateX(${deg}deg)`
+            }
         },
 
         // 记录手指开始滑动的位置和时间
@@ -73,9 +152,7 @@ export default {
                 dis = this.maxDeg + this.opts.buffer;
             }
             this.realY = dis;
-            this.boxStyle = {
-                transform: `rotateX(${dis}deg)`
-            }
+            this.setBoxRotate(dis);
         },
 
         // 手指滑动结束，根据手指滑动的时间及距离滚动元素
@@ -108,8 +185,9 @@ export default {
                 time: time,
                 cb: (value, isEnd) => {                  
                     this.realY = this.scrollY = value;
-                    this.boxStyle = {
-                        transform: `rotateX(${this.scrollY}deg)`
+                    this.setBoxRotate(this.scrollY);
+                    if (isEnd) {
+                        this.curValue = this.arr[this.curIndex];
                     }
                 }
             })
@@ -151,11 +229,6 @@ export default {
             }
             go.call(this);
         },
-
-        // 根据传入的值获取index
-        getIndex(value) {
-
-        }
     
     }
 }
