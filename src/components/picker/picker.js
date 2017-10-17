@@ -1,7 +1,7 @@
 export default {
     name: 'picker',
 
-    props: ['list', 'value', 'options', 'displayFn', 'valueField', 'nameField', 'isPlain'],
+    props: ['list', 'value', 'options', 'displayFn', 'valueField', 'nameField', 'isPlain', 'isCycle'],
 
     data() {
         return {
@@ -15,12 +15,14 @@ export default {
             boxStyle: null,
             curIndex: 0,
             scrollY: 0,     // 已经滚动的值
-            realY: 0      // 实时滚动值
+            realY: 0,     // 实时滚动值
         }
     },
 
     mounted() {
         this.arr = this.initList();
+
+        this.curIndex = this.getIndex(this.value)
         this.setScrollByValue(this.value);
     },
 
@@ -35,21 +37,27 @@ export default {
                 return 0;
             }
             return this.unitDeg * (this.list.length - 1);
+        },
+
+        extraLen() {
+            // 循环滚动时需要额外添加元素的个数
+            return this.isCycle ? Math.ceil(190 / this.unitDeg) : 0;
         }
     },
 
     watch: {
         value(val) {
             if (val) {
+                this.curIndex = this.getIndex(val);
                 this.setScrollByValue(val);
-            }            
+            }
         },
 
         curValue(val) {
             if (!val) {
                 return;
             }
-            let curVal = this.getValue();
+            let curVal = this.getValue(val);
             if (this.value == curVal) {
                 return;
             }
@@ -64,14 +72,27 @@ export default {
                 return [];
             }
             let deg = this.unitDeg,
-                obj = {};
+                obj = {},
+                arr = this.list,
+                len = 0;
 
-            return this.list.map((v, i) => {
-                obj.hidden = (deg * i > 180);
-                obj.deg = deg * i;
-                obj.style = `height: ${this.opts.itemH}px; margin-top: ${-this.opts.itemH / 2}px; transform: rotateX(${-deg * i}deg) translateZ(${this.opts.r}px);`;
-                return Object.assign({}, this.isPlain ? {value: v} : v, obj)
+            if (this.isCycle) {
+                len = this.extraLen;
+                let arr1 = arr.slice(-len, arr.length),
+                    arr2 = arr.slice(0, len);
+
+                arr = arr1.concat(arr, arr2);
+            }
+
+            return arr.map((v, i) => {
+                obj.deg = deg * (i - len);
+                obj.style = this.getItemStyle(obj.deg);
+                return Object.assign({}, this.isPlain ? { value: v } : v, obj)
             })
+        },
+
+        getItemStyle(deg) {
+            return `height: ${this.opts.itemH}px; margin-top: ${-this.opts.itemH / 2}px; transform: rotateX(${-deg}deg) translateZ(${this.opts.r}px);`;
         },
 
         // 获取当前选项的名称
@@ -87,13 +108,13 @@ export default {
         },
 
         // 获取当前选项的值
-        getValue() {
+        getValue(val) {
             if (this.valueField) {
-                return this.curValue[this.valueField];
+                return val[this.valueField];
             } else if (this.isPlain) {
-                return this.curValue.value;
+                return val.value;
             }
-            return this.curValue;
+            return val;
         },
 
         // 根据传入的值获取index
@@ -108,7 +129,7 @@ export default {
                         if (value == this.list[i]) {
                             return i;
                         }
-                    }                    
+                    }
                 }
                 return -1;
             } else {
@@ -144,13 +165,29 @@ export default {
         move(event) {
             event.preventDefault();
             let touch = event.changedTouches[0],
-            dis = this.scrollY + this.startY - touch.screenY;
+                dis = this.scrollY + this.startY - touch.screenY;
 
-            if (dis < -this.opts.buffer) {
-                dis = -this.opts.buffer;
-            } else if (dis > this.maxDeg + this.opts.buffer) {
-                dis = this.maxDeg + this.opts.buffer;
+            if (this.isCycle) {
+                // 往下拉
+                let len = this.extraLen,
+                    maxIndex = this.arr.length - 1 - 2 * len;
+                if (touch.screenY - this.startY > 0 && (this.curIndex > -len / 2 && this.curIndex < len / 2)) {
+                    this.curIndex += this.arr.length - 2 * len;
+                    this.scrollY = this.realY = this.curIndex * this.unitDeg;
+                    this.setBoxRotate(this.realY);
+                } else if (touch.screenY - this.startY < 0 && (this.curIndex > maxIndex - len / 2 && this.curIndex < maxIndex + len / 2)) {
+                    this.curIndex = 0 + (this.curIndex - maxIndex - 1);
+                    this.scrollY = this.realY = this.curIndex * this.unitDeg;
+                    this.setBoxRotate(this.realY);
+                }
+            } else {
+                if (dis < -this.opts.buffer) {
+                    dis = -this.opts.buffer;
+                } else if (dis > this.maxDeg + this.opts.buffer) {
+                    dis = this.maxDeg + this.opts.buffer;
+                }
             }
+            
             this.realY = dis;
             this.setBoxRotate(dis);
         },
@@ -158,36 +195,36 @@ export default {
         // 手指滑动结束，根据手指滑动的时间及距离滚动元素
         end(event) {
             let touch = event.changedTouches[0],
-            // 手指滑动的距离
-            moveDis = this.startY - touch.screenY,
-            dis = this.scrollY + moveDis,
-            // picker滚动时长
-            time = 0,
-            // picker可见总高度
-            total = this.opts.r * 2;
+                // 手指滑动的距离
+                moveDis = this.startY - touch.screenY,
+                dis = this.scrollY + moveDis,
+                // picker滚动时长
+                time = 0,
+                // picker可见总高度
+                total = this.opts.r * 2;
 
-            if (Date.now() - this.startTime > 500) {
+            if (Date.now() - this.startTime > 200) {
                 time = 500;
             } else {
                 dis = this.scrollY + (moveDis / total * 720);
                 time = 1000;
             }
-            if (dis < 0) {
-                dis = 0;
-            } else if (dis > this.maxDeg) {
-                dis = this.maxDeg;
+            if (dis < -Math.floor(this.extraLen / 2) * this.unitDeg) {
+                dis = -Math.floor(this.extraLen / 2) * this.unitDeg;
+            } else if (dis > this.maxDeg + Math.floor(this.extraLen / 2) * this.unitDeg) {
+                dis = this.maxDeg + Math.floor(this.extraLen / 2) * this.unitDeg;
             }
 
-            this.curIndex = Math.round(Math.abs(dis) / this.unitDeg);
+            this.curIndex = Math.round(dis / this.unitDeg);
             this.animate({
                 s0: this.realY,
-                st:  (dis > 0 ? this.curIndex * this.unitDeg : -this.curIndex * this.unitDeg),
+                st: this.curIndex * this.unitDeg,
                 time: time,
-                cb: (value, isEnd) => {                  
+                cb: (value, isEnd) => {
                     this.realY = this.scrollY = value;
                     this.setBoxRotate(this.scrollY);
                     if (isEnd) {
-                        this.curValue = this.arr[this.curIndex];
+                        this.curValue = this.arr[this.curIndex + this.extraLen];
                     }
                 }
             })
@@ -198,7 +235,7 @@ export default {
             let a = -2 * dis / Math.pow(time, 2),
                 v0 = -a * time;
             // s0初始位置，t运动时间
-            return function(s0, t) {
+            return function (s0, t) {
                 return s0 + v0 * t + a * Math.pow(t, 2) / 2;
             }
         },
@@ -210,14 +247,14 @@ export default {
                 tDiff = 0,
                 uDis = 0,
                 getMotionDis = this.getVariableMotionFn(dis, opts.time);
-    
+
             function go() {
                 tDiff = Date.now() - date;
                 if (tDiff >= opts.time) {
                     uDis = opts.st;
                     opts.cb(uDis, true);
                     return;
-                } 
+                }
                 uDis = getMotionDis(opts.s0, tDiff);
                 if (dis < 0 && uDis < opts.st || (dis > 0 && uDis > opts.st)) {
                     uDis = opts.st;
@@ -229,6 +266,6 @@ export default {
             }
             go.call(this);
         },
-    
+
     }
 }

@@ -19,7 +19,7 @@ export default {
         return {
             info: {},
             pList: [],
-            pickerVal: 25
+            pickerVal: 48
         }
     },
 

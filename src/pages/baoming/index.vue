@@ -1,7 +1,7 @@
 <template>
   <div class="baoming">
       <div class="input-wrapper">
-          <input type="text" name="username" growing-track='true' placeholder="请输入您的名字" v-model="info.name"/>
+          <input type="date" name="username" growing-track='true' placeholder="请输入您的名字" v-model="info.name"/>
           
       </div>
       <div class="input-wrapper">
@@ -14,7 +14,7 @@
           picker value: {{this.pickerVal}}
       </div>
 
-      <picker :list="pList" :is-plain="true" v-model="pickerVal"/>
+      <picker :list="pList" :is-plain="true" v-model="pickerVal" is-cycle="true"/>
   </div>
 </template>
 
