@@ -3,6 +3,7 @@ import { MatchMan } from '../../matchMan';
 import pushMsg from '../../push-msg';
 import { pushHost } from '../../../config/sys.config';
 import {Test} from '../../components';
+import ScreenShot from '../../category/canvas/screenshot';
 
 export default {
     name: 'home',
@@ -40,6 +41,13 @@ export default {
     },
 
     methods: {
+        ss() {
+            let ss = null;
+            if (!ss) {
+                ss = new ScreenShot();
+            }
+            ss.cut(this.$refs.ss);
+        },
         upload(event) {
             let file = event.target.files[0];
             let reader = new FileReader();

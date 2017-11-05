@@ -1,7 +1,8 @@
 <template>
     <div>
-        <div class="typing">this is home page!!!</div>
+        <div class="typing" ref="ss">this is home page!!!</div>
         <div>
+            <div @click="ss">截图</div>
             <input type="file" @change="upload"/>
             <div style="fontSize: 40px" v-show="isloading">image is loading</div>
             <img :src="img" class="img" />
