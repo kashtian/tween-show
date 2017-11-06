@@ -18,7 +18,8 @@ export default {
         arr: [1,2,3,4,5,6],
         img: null,
         isloading: false,
-        time: 0
+        time: 0,
+        ssUrl: ''
       }
     },
 
@@ -38,15 +39,15 @@ export default {
         //     document.head.appendChild(script);
         // }
         pushMsg.init(this.getAppKey);
+        this.ssObj = new ScreenShot();
     },
 
     methods: {
         ss() {
-            let ss = null;
-            if (!ss) {
-                ss = new ScreenShot();
-            }
-            ss.cut(this.$refs.ss);
+            this.ssObj.cut(this.$refs.ss)
+                .then(url => {
+                    this.ssUrl = url;
+                });
         },
         upload(event) {
             let file = event.target.files[0];

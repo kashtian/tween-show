@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div class="typing" ref="ss">this is home page!!!</div>
+    <div ref="ss">
+        <div class="typing" >this is home page!!!</div>
         <div>
             <div @click="ss">截图</div>
             <input type="file" @change="upload"/>
@@ -215,6 +215,7 @@
         <div class="test-box">
           <div class="test-item" @click="deleteItem($event, index)" v-for="(item, index) in arr" :key="item">点我删除</div>
         </div>
+        <a :href="ssUrl" target="_blank">fsdfdsf</a>
     </div>
 </template>
 
