@@ -23,7 +23,7 @@ export default class Game {
     // 初始化canvas
     init() {
         let canvas = document.createElement('canvas'),
-            parent = document.querySelector(this.opts.parent);
+            parent = this.parent = document.querySelector(this.opts.parent);
 
         canvas.width = this.opts.cw;
         canvas.height = this.opts.ch;
@@ -34,6 +34,7 @@ export default class Game {
         }
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        parent.style.position = 'relative';
         parent.appendChild(canvas);
 
         // 监听页面是否切换到后台，记录时间间隔以重绘动画
@@ -139,7 +140,41 @@ export default class Game {
     }
 
     // 给canvas添加事件
-    addEvent(type, handler) {
-        this.canvas.addEventListener(type, handler)
+    addEvent(type, handler, dom) {
+        (dom || this.canvas).addEventListener(type, handler)
+    }
+
+    // 增加canvas，分层处理动画
+    addCanvas(options) {
+        let canvas = document.createElement('canvas');
+        canvas.width = options.cw;
+        canvas.height = options.ch;
+        this.setStyleAttr(canvas, Object.assign({
+            position: 'absolute',
+            top: '0px',
+            left: '50%',
+            marginLeft: `-${options.cw/2}px`,
+            zIndex: 1
+        }, options.style))
+        this.parent.appendChild(canvas);
+        canvas.clear = function() {
+            canvas.getContext('2d').clearRect(0, 0, options.cw, options.ch);
+        }
+        return canvas
+    }
+
+    // 给dom对象的style赋值
+    setStyleAttr(dom, styleObj) {
+        for (let key in styleObj) {
+            dom.style[key] = styleObj[key];
+        }
+    }
+
+    // 获取用于缓存的canvas
+    getCacheCanvas(options) {
+        let canvas = document.createElement('canvas');
+        canvas.width = options.cw;
+        canvas.height = options.ch;
+        return canvas
     }
 }
