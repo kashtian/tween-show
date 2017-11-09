@@ -36,7 +36,8 @@ export default {
             this.dGame = new Game({
                 parent: '.doll-game',
                 cw: this.opts.cw,
-                ch: this.opts.ch
+                ch: this.opts.ch,
+                className: 'stage'
             })
             this.dGame.addEvent('click', event => {
                 this.catchDoll(event);
@@ -79,7 +80,6 @@ export default {
         draw(isSwing, isClose) {
             this.dGame.clear();
             isClose = !isClose;
-            this.loadBg();
             this.loadDoll();
             this.drawClaws({ isClose: isClose });
             if (isSwing) {
@@ -87,12 +87,6 @@ export default {
                     this.draw(isSwing, isClose);
                 }, 500);
             }
-        },
-
-        loadBg() {
-            this.dGame.loadImage('/images/bg_main.png').then(img => {
-                this.ctx.drawImage(img, 0, 0, this.opts.cw, this.opts.ch);
-            })
         },
 
         catchDoll(event) {
@@ -113,7 +107,6 @@ export default {
             }
             this.stopSwing();
             this.dGame.clear();
-            this.loadBg();
             this.loadDoll();
             this.moveToTarget(doll, index);
         },
@@ -122,7 +115,6 @@ export default {
             this.dGame.animate({
                 cb: (v) => {
                     this.dGame.clear();
-                    this.loadBg();
                     this.loadDoll();
                     this.drawClaws({
                         x: v
@@ -135,7 +127,6 @@ export default {
             this.dGame.animate({
                 cb: (v) => {
                     this.dGame.clear();
-                    this.loadBg();
                     this.loadDoll();
                     this.drawClaws({
                         x: pos.x - (108 - 78)/2,
@@ -149,7 +140,6 @@ export default {
             this.dGame.animate({
                 cb: (v) => {
                     this.dGame.clear();
-                    this.loadBg();
                     this.loadDoll(index, v);
                     this.drawClaws({
                         x: pos.x - (108 - 78)/2,
