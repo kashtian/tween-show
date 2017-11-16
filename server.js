@@ -3,6 +3,7 @@ const fs = require('fs');
 const express = require('express');
 const LRU = require('lru-cache');
 const serialize = require('serialize-javascript');
+const bodyParser = require('body-parser');
 
 const port = require('./config/sys.config').port;
 const createBundleRenderer = require('vue-server-renderer').createBundleRenderer;
@@ -31,6 +32,10 @@ function parseIndex(template) {
 const app = express();
 
 app.use(express.static('public'));
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    extended: false
+}))
 
 if (process.argv.indexOf('--development') > -1) {    
     require('./build/setup-dev-server')(app, {
@@ -84,6 +89,11 @@ app.get('*', (req, res) => {
         console.error(err);
     })
 });
+
+app.post('/test', (req, res) => {
+    console.log('hash========>', req.body.hash);
+    res.send('ok');
+})
 
 app.listen(port, () => {
     console.log(`==> Listening at http://localhost:${port}`)

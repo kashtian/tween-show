@@ -9,6 +9,8 @@
       <div @click="setStorage">设置localStorage</div>
       <div @click="getStorage">获取localStorage</div>
       <div @click="clearStorage">清除localStorage</div>
+      <div>your browser's fingerprint: {{uid}}</div>
+      <div @click="postInfo">上传hash值</div>
   </div>
 </template>
 
@@ -19,6 +21,12 @@
         route: {
             path: '/cookie',
             title: '僵尸cookie'
+        },
+
+        data() {
+            return {
+                uid: ''
+            }
         },
 
         mounted() {
@@ -34,10 +42,33 @@
             }
 
             document.body.appendChild(script);
+
+            const fp2 = require('fingerprintjs2')
+            new fp2({
+                excludeCanvas: true,
+                excludeUserAgent: true,
+            }).get((result, components) => {
+                this.uid = result;
+                console.log('result: ', result); //a hash, representing your device fingerprint
+                console.log('components: ', components); // an array of FP components
+                this.componentsInfo = components
+            });
             
         },
 
         methods: {
+            postInfo() {
+                fetch('/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        hash: JSON.stringify(this.componentsInfo)
+                    }),
+                })
+            },
+
             loadScript(arr, cb) {
                 let script = null;
                 arr.forEach(v => {
