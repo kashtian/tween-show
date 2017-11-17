@@ -5,6 +5,7 @@ import Baoming from './baoming';
 import Test from './test';
 import Cookie from './evercookie';
 import DollOptimize from './hold-doll-optimize'
+import LiveStream from './live-stream'
 
 export default {
     Home,
@@ -13,5 +14,6 @@ export default {
     Baoming,
     Test,
     Cookie,
-    DollOptimize
+    DollOptimize,
+    LiveStream
 }
