@@ -27,6 +27,10 @@ export default {
         },
 
         initSocket() {
+            if (this.isInit) {
+                return;
+            }
+            this.isInit = true;
             let socket = this.socket = io.connect();
             let room = 'test';
 
