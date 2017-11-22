@@ -13,7 +13,7 @@ export default {
         createSocketJS() {
             if (typeof window != undefined) {
                 let script = document.createElement('script');
-                script.src = 'https://172.20.17.45:3008/socket.io/socket.io.js';
+                script.src = '/socket.io/socket.io.js';
                 script.onload = () => {
                     this.initSocket();
                     this.getMedia();
@@ -23,7 +23,7 @@ export default {
         },
 
         initSocket() {
-            let socket = this.socket = io.connect('https://172.20.17.45:3008');
+            let socket = this.socket = io.connect();
             let room = 'test';
 
             if (!room) {
