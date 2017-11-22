@@ -4,9 +4,9 @@
         <textarea ref="textSend" class="text-area"></textarea>
         <textarea ref="textReceive" class="text-area"></textarea>
         <br/>
-        <button>Start</button>
-        <button>Send</button>
-        <button>Stop</button>
+        <button type="button" @click="createConnection" :disabled="!startStatus">Start</button>&nbsp;&nbsp;
+        <button type="button" @click="sendData" :disabled="!sendStatus">Send</button>&nbsp;&nbsp;
+        <button type="button" @click="closeDataChannels" :disabled="!stopStatus">Stop</button>
     </div>
 </template>
 

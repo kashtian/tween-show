@@ -30,6 +30,19 @@ function parseIndex(template) {
 }
 
 const app = express();
+let server;
+
+if (process.argv.includes('--development') && process.argv.includes('--https')) {
+    server = require('https').createServer({
+        key: fs.readFileSync('./key.pem'),
+        cert: fs.readFileSync('./cert.pem')
+    }, app);
+} else {
+    server = require('http').createServer(app);
+}
+
+// 初始化socket,及注册相关事件
+require('./init-socket')(server);
 
 app.use(express.static('public'));
 app.use(bodyParser.json())
@@ -55,6 +68,9 @@ if (process.argv.indexOf('--development') > -1) {
 }
 
 app.get('*', (req, res) => {
+    if (req.path.includes('socket.io')) {
+        res.end(res.body)
+    }
     if(!renderer) {
         return res.end('waiting for compilation... refresh in a moment.');
     }
@@ -95,6 +111,6 @@ app.post('/test', (req, res) => {
     res.send('ok');
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`==> Listening at http://localhost:${port}`)
 })

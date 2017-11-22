@@ -30,14 +30,7 @@ export default {
     mounted() {
         bezier.draw(this.$refs.canvas);
         this.createMatchMan();
-        // if (typeof window != undefined) {
-        //     let script = document.createElement('script');
-        //     script.src = 'http://localhost:3010/socket.io/socket.io.js';
-        //     script.onload = () => {
-        //         this.initSocket();
-        //     }
-        //     document.head.appendChild(script);
-        // }
+        // this.createSocketJS();
         pushMsg.init(this.getAppKey);
         this.ssObj = new ScreenShot();
     },
@@ -67,6 +60,17 @@ export default {
         createMatchMan() {
             let canvas = this.$refs.scene;
             let matchMan = new MatchMan(canvas.getContext('2d'));
+        },
+
+        createSocketJS() {
+            if (typeof window != undefined) {
+                let script = document.createElement('script');
+                script.src = 'http://localhost:3010/socket.io/socket.io.js';
+                script.onload = () => {
+                    this.initSocket();
+                }
+                document.head.appendChild(script);
+            }
         },
 
         initSocket() {

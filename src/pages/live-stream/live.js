@@ -1,4 +1,5 @@
 import LiveStream2 from './two.vue';
+import LiveStream3 from './three.vue';
 
 export default {
     name: 'live-stream',
@@ -9,7 +10,8 @@ export default {
     },
 
     components: {
-        LiveStream2
+        LiveStream2,
+        LiveStream3
     },
 
     data() {
@@ -31,7 +33,11 @@ export default {
             return navigator.mediaDevices.getUserMedia(Object.assign({
                 audio: false,
                 video: true
-            }, constraints)).catch(err => console.error('get media error: ', err))
+            }, constraints)).then(stream => {
+                this.trace('received local stream: ', stream);
+                this.setStreamToEle(this.$refs.two_video_1, stream);
+                this.localStream = stream;
+            }).catch(err => console.error('get media error: ', err))
         },
 
         // 根据不同情况对video元素添加视频
@@ -39,11 +45,12 @@ export default {
             if (!ele || !stream) {
                 return;
             }
-            if (window.URL) {
-                ele.src = window.URL.createObjectURL(stream);
-            } else {
-                ele.srcObject = stream;
-            }
+            // if (window.URL) {
+            //     ele.src = window.URL.createObjectURL(stream);
+            // } else {
+            //     ele.srcObject = stream;
+            // }
+            ele.srcObject = stream;
         },
 
         stopVideo(stream) {
@@ -72,11 +79,7 @@ export default {
         // 开始录制视频
         start() {
             this.trace('requesting local stream')
-            this.getMedia().then(stream => {
-                this.trace('received local stream');
-                this.setStreamToEle(this.$refs.two_video_1, stream);
-                this.localStream = stream;
-            })
+            this.getMedia()
         },
 
         // 发起视频邀请
