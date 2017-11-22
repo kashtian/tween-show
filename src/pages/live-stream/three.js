@@ -15,11 +15,15 @@ export default {
                 let script = document.createElement('script');
                 script.src = '/socket.io/socket.io.js';
                 script.onload = () => {
-                    this.initSocket();
-                    this.getMedia();
+                    
                 }
                 document.head.appendChild(script);
             }
+        },
+
+        startConnection() {
+            this.initSocket();
+            this.getMedia();
         },
 
         initSocket() {
