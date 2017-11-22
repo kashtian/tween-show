@@ -33,7 +33,12 @@ module.exports = server => {
         socket.on('message', message => {
             console.log('Client said: ', message);
             // the socket itself being excluded
-            socket.to(roomStr).emit('message', message);
+            if (message == 'bye') {
+                rooms[roomStr] = [];
+                io.to(roomStr).emit('message', message);
+            } else {
+                socket.to(roomStr).emit('message', message);
+            }            
         })
     
         socket.on('ipaddr', () => {

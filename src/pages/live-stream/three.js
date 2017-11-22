@@ -28,6 +28,7 @@ export default {
 
         initSocket() {
             if (this.isInit) {
+                this.socket.emit('createOrJoin', room);
                 return;
             }
             this.isInit = true;
@@ -169,6 +170,8 @@ export default {
             this.pc.close();
             this.pc = null;
             this.isInitiator = false;
+            this.$refs.localVideo.srcObject = null;
+            this.$refs.remoteVideo.srcObject = null;
         },
 
         getMedia(constraints) {
