@@ -45,8 +45,12 @@
 
             const fp2 = require('fingerprintjs2')
             new fp2({
-                excludeCanvas: true,
                 excludeUserAgent: true,
+                excludeSessionStorage: true,
+                excludeIndexedDB: true,
+                excludeOpenDatabase: true,
+                excludeCanvas: true,
+                excludeWebGL: true
             }).get((result, components) => {
                 this.uid = result;
                 console.log('result: ', result); //a hash, representing your device fingerprint

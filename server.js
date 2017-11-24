@@ -68,9 +68,6 @@ if (process.argv.indexOf('--development') > -1) {
 }
 
 app.get('*', (req, res) => {
-    if (req.path.includes('socket.io')) {
-        res.end(res.body)
-    }
     if(!renderer) {
         return res.end('waiting for compilation... refresh in a moment.');
     }

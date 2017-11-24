@@ -19,7 +19,7 @@ export default {
             this.localConnection = new RTCPeerConnection(servers, pcConstraint);
             this.sendChannel = this.localConnection.createDataChannel('sendDataChannel', dataConstraint);   
 
-            // 当RTCICECandidate对象被添加时触发(交换信息时触发)
+            // 当RTCICECandidate对象被添加时触发(交换信息时触发createOffer,createAnswer)
             this.localConnection.onicecandidate = this.createIceCandidateFn(() => this.remoteConnection, 'local');
             // 当两个connection对象那个都添加了彼此的iceCandidate后触发open事件
             this.sendChannel.onopen = this.traceChannelState.bind(this, 'Send');

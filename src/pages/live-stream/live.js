@@ -1,5 +1,6 @@
 import LiveStream2 from './two.vue';
 import LiveStream3 from './three.vue';
+import LiveStream4 from './four.vue';
 
 export default {
     name: 'live-stream',
@@ -11,7 +12,8 @@ export default {
 
     components: {
         LiveStream2,
-        LiveStream3
+        LiveStream3,
+        LiveStream4
     },
 
     data() {
