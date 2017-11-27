@@ -68,6 +68,7 @@ export default {
             })
             
             socket.on('message', message => {
+                console.log('Clent received message', message)
                 if (message.type == 'offer') {
                     this.peerConnection.setRemoteDescription(message);
                     this.peerConnection.createAnswer().then(desc => {
@@ -100,7 +101,8 @@ export default {
             }
 
             if (this.isInitiator) {
-                this.dataChannel = this.peerConnection.createDataChannel('photos');
+                console.log('creating data channel')
+                this.dataChannel = this.peerConnection.createDataChannel('photos', null);
                 this.addDataChannelEvent();
                 this.peerConnection.createOffer().then(desc => {
                     this.peerConnection.setLocalDescription(desc);
@@ -108,6 +110,7 @@ export default {
                 }).catch(err => console.error('create offer error: ', err))
             } else {
                 this.peerConnection.ondatachannel = event => {
+                    console.log('received channel')
                     this.dataChannel = event.channel;
                     this.addDataChannelEvent();
                 }
@@ -123,9 +126,7 @@ export default {
                 this.sendBtnStatus = false;
                 console.log('data channel state is: ', this.dataChannel.readyState)
             }
-            this.dataChannel.onmessage = event => {
-                empty();
-            }
+            this.dataChannel.onmessage = this.receiveDataChromeFactory();
         },
 
         sendMessage(message) {
@@ -171,12 +172,67 @@ export default {
         },
 
         snapPhoto() {
-            let ctx = this.$refs.photo.getContext('2d');
+            let ctx = this.photoCtx = this.$refs.photo.getContext('2d');
             ctx.drawImage(this.$refs.camera, 0, 0, this.pw, this.ph)
         }, 
 
         sendPhoto() {
+            // Split data channel message 
+            let CHUNK_LEN = 64000;
+            let img = this.photoCtx.getImageData(0, 0, this.pw, this.ph);
+            let len = img.data.byteLength;
 
+            console.log('Sending a total of' + len + ' byte(s)');
+            this.dataChannel.send(JSON.stringify({
+                len: len,
+                pw: this.pw,
+                ph: this.ph
+            }));
+
+            for (let i = 0, end = 0; i < len;) {
+                end = i + CHUNK_LEN > len ? len : i + CHUNK_LEN;
+                this.dataChannel.send(img.data.subarray(i, end));
+                i += CHUNK_LEN;
+            }
+            console.log('send all')
+        },
+
+        receiveDataChromeFactory() {
+            let buf, count, w, h;
+
+            return (event) => {
+                console.log('message event type: ', event.data);
+                if (typeof event.data == 'string' && /\{/.test(event.data)) {
+                    let info = JSON.parse(event.data);
+                    buf = new Uint8ClampedArray(parseInt(info.len));
+                    count = 0;
+                    w = info.pw;
+                    h = info.ph;
+                    console.log(`Excepting a total of ${buf.byteLength} bytes`)
+                    return ;
+                }
+                console.log('receive photo data')
+                let data = new Uint8ClampedArray(event.data);
+                buf.set(data, count);
+                count += data.byteLength;
+
+                if (count == buf.byteLength) {
+                    console.log('Receive data done.')
+                    this.renderPhoto(buf, w, h);
+                }
+            }
+        },
+
+        renderPhoto(data, w, h) {
+            let canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            this.$refs.received.appendChild(canvas);
+
+            let ctx = canvas.getContext('2d');
+            let img = ctx.createImageData(w, h);
+            img.data.set(data);
+            ctx.putImageData(img, 0, 0);
         }
     }
 }
