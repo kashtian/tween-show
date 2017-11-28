@@ -126,7 +126,8 @@ export default {
                 this.sendBtnStatus = false;
                 console.log('data channel state is: ', this.dataChannel.readyState)
             }
-            this.dataChannel.onmessage = this.receiveDataChromeFactory();
+            this.dataChannel.onmessage = /firefox/.test(navigator.userAgent.toLowerCase()) ? 
+            this.receiveDataFirefoxFactory() : this.receiveDataChromeFactory();
         },
 
         sendMessage(message) {
@@ -233,6 +234,45 @@ export default {
             let img = ctx.createImageData(w, h);
             img.data.set(data);
             ctx.putImageData(img, 0, 0);
+        },
+
+        receiveDataFirefoxFactory() {
+            let count, total, parts, w, h;
+
+            return event => {
+                console.log('message event type: ', event.data)
+                if (typeof event.data == 'string' && /\{/.test(event.data)) {
+                    let info = JSON.parse(event.data);
+                    total = parseInt(info.len);
+                    count = 0;
+                    w = info.pw;
+                    h = info.ph;
+                    console.log(`Excepting a total of ${total} bytes`)
+                    return ;
+                }
+                parts.push(event.data);
+                count += event.data.size;
+
+                if (count == total) {
+                    console.log('Assembling payload');
+                    let buf = new Uint8ClampedArray(total);
+
+                    function compose(i, pos) {
+                        let reader = new FileReader();
+                        reader.onload = () => {
+                            buf.set(new Uint8ClampedArray(reader.result), pos);
+                            if (i + 1 == parts.length) {
+                                console.log('Receive data done.')
+                                this.renderPhoto(buf, w, h);
+                            } else {
+                                compose.call(this, i + 1, pos + reader.result.byteLength)
+                            }
+                        }
+                        reader.readAsArrayBuffer(parts[i]);
+                    }
+                    compose.call(this, 0, 0);
+                }
+            }
         }
     }
 }
