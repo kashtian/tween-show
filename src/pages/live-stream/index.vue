@@ -18,6 +18,7 @@
         <live-stream2 />
         <live-stream3 />
         <live-stream4 />
+        <live-stream5 />
     </div>
 </template>
 
