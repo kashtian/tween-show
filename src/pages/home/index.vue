@@ -9,7 +9,7 @@
             <div>time: {{time}}</div>
         </div>
         <test>
-            <template scope="test">
+            <template slot-scope="test">
             <div>{{test.bb}}</div>
             <div>{{test.text}}</div>
             </template>
