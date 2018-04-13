@@ -6,6 +6,7 @@ import Test from './test';
 import Cookie from './evercookie';
 import DollOptimize from './hold-doll-optimize'
 import LiveStream from './live-stream'
+import Turnplate from './turnplate'
 
 export default {
     Home,
@@ -15,5 +16,6 @@ export default {
     Test,
     Cookie,
     DollOptimize,
-    LiveStream
+    LiveStream,
+    Turnplate
 }

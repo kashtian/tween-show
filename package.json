@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "babel-node ./server.js --development --https",
+    "dev": "babel-node ./server.js --development",
     "build": "rimraf dist && npm run build:client && npm run build:serverEntry",
     "build:client": "webpack --config ./build/webpack.client.config.js",
     "build:serverEntry": "webpack --config ./build/webpack.serverEntry.config.js",
