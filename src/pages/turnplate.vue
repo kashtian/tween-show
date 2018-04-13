@@ -18,8 +18,7 @@ export default {
 
   data() {
     return {
-      transform: 'none',
-      isAnmationing: false
+      transform: 'none'
     }
   },
 

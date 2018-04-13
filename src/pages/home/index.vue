@@ -16,7 +16,7 @@
         </test>
         <router-link to="/2048">2048 game</router-link>
         <div>
-        <router-link to="/doll">抓娃娃游戏</router-link>
+        <router-link to="/dollOptimize">抓娃娃游戏</router-link>
         </div>
         <div>
         <router-link to="/test">打开测试页面</router-link>
