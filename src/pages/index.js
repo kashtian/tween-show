@@ -7,6 +7,7 @@ import Cookie from './evercookie';
 import DollOptimize from './hold-doll-optimize'
 import LiveStream from './live-stream'
 import Turnplate from './turnplate'
+import TencentMap from './tencent-map'
 
 export default {
     Home,
@@ -17,5 +18,6 @@ export default {
     Cookie,
     DollOptimize,
     LiveStream,
-    Turnplate
+    Turnplate,
+    TencentMap
 }

@@ -109,5 +109,5 @@ app.post('/test', (req, res) => {
 })
 
 server.listen(port, () => {
-    console.log(`==> Listening at http://localhost:${port}`)
+    console.log(`==> Listening at ${process.argv.includes('--https') ? 'https' : 'http'}://localhost:${port}`)
 })
