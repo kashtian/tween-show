@@ -49,12 +49,14 @@ export default {
                 }
             })
             this.clawsCtx = this.clawsCanvas.getContext('2d');
+            this.clawsCtx.fillStyle = 'rgba(251,251,251,0)'
 
             this.dollCanvas = this.dGame.addCanvas({
                 cw: this.opts.cw,
                 ch: this.opts.ch,
             })
             this.dollCtx = this.dollCanvas.getContext('2d');
+            this.dollCtx.fillStyle = 'rgba(251,251,251,0)'
 
             this.dGame.addEvent('click', event => {
                 this.catchDoll(event);
