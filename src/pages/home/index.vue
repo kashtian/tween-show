@@ -19,10 +19,7 @@
         <router-link to="/dollOptimize">抓娃娃游戏</router-link>
         </div>
         <div>
-        <router-link to="/test">打开测试页面</router-link>
-        </div>
-        <div>
-        <router-link to="/bm">报名</router-link>
+        <router-link to="/picker">picker</router-link>
         </div>
         <canvas id="bezier" ref="canvas"></canvas>
         <canvas id="scene" ref="scene" width="500px" height="500px"></canvas>

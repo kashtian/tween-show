@@ -3,8 +3,8 @@ import { Picker } from '../../components';
 export default {
     name: 'baoming',
     route: {
-        path: '/bm',
-        title: '报名'
+        path: '/picker',
+        title: '选择器'
     },
 
     components: {

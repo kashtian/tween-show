@@ -1,7 +1,7 @@
 <template>
     <div class="dir-picker" @touchstart="start" @touchmove="move" @touchend="end" :style="{height: this.opts.r * 2 + 'px'}">
         <ul class="list-wrapper" :style="boxStyle">
-            <li class="item" :class="{hidden: !(item.deg > realY -  180 && item.deg < realY + 180)}" v-for="(item,index) in arr" :key="item.value" :style="item.style">{{getName(item)}}</li>
+            <li class="item" :class="{hidden: !(item.deg > realY -  180 && item.deg < realY + 180)}" v-for="(item, index) in arr" :key="index" :style="item.style">{{getName(item)}}</li>
         </ul>
         <div class="mask-wrapper" :style="{transform: 'translateZ(' + this.opts.r + 'px)'}">
             <div class="mask" :style="{height: (this.opts.r * 2 - this.opts.itemH - 2) / 2 + 'px'}"></div>

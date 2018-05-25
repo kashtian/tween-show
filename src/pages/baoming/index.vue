@@ -1,15 +1,5 @@
 <template>
   <div class="baoming">
-      <div class="input-wrapper">
-          <input type="date" name="username" growing-track='true' placeholder="请输入您的名字" v-model="info.name"/>
-          
-      </div>
-      <div class="input-wrapper">
-          <input type="text" name="usertel" growing-track='true' placeholder="请输入您的电话" v-model="info.tel" />
-      </div>
-      <div>
-          <button @click="baoming">我要报名</button>
-      </div>
       <div>
           picker value: {{this.pickerVal}}
       </div>
