@@ -1,5 +1,8 @@
 <template>
-    <div class="dir-picker" @touchstart="start" @touchmove="move" @touchend="end" :style="{height: this.opts.r * 2 + 'px'}">
+    <div class="dir-picker" 
+      @touchstart="start" @touchmove="move" @touchend="end"
+      @mousedown="start" @mousemove="move" @mouseup="end"
+      :style="{height: this.opts.r * 2 + 'px'}">
         <ul class="list-wrapper" :style="boxStyle">
             <li class="item" :class="{hidden: !(item.deg > realY -  180 && item.deg < realY + 180)}" v-for="(item, index) in arr" :key="index" :style="item.style">{{getName(item)}}</li>
         </ul>
