@@ -2,7 +2,6 @@ import bezier from '../../tween/cubic-bezier';
 import { MatchMan } from '../../matchMan';
 import pushMsg from '../../push-msg';
 import { pushHost } from '../../../config/sys.config';
-import {Test} from '../../components';
 import ScreenShot from '../../category/canvas/screenshot';
 
 export default {
@@ -21,10 +20,6 @@ export default {
         time: 0,
         ssUrl: ''
       }
-    },
-
-    components: {
-        Test
     },
 
     mounted() {
