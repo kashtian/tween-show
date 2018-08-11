@@ -3,7 +3,6 @@ import Game2048 from './game-2048';
 import Doll from './hold-doll';
 import Baoming from './baoming';
 import Test from './test';
-import Cookie from './evercookie';
 import DollOptimize from './hold-doll-optimize'
 import LiveStream from './live-stream'
 import Turnplate from './turnplate'
@@ -15,7 +14,6 @@ export default {
     Doll,
     Baoming,
     Test,
-    Cookie,
     DollOptimize,
     LiveStream,
     Turnplate,
