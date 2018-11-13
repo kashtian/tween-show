@@ -4,7 +4,7 @@
     @mousedown="start" @mousemove="move" @mouseup="end"
     :style="{height: this.opts.r * 2 + 'px'}">
       <div class="list-wrapper" :style="boxStyle">
-        <div class="item" :class="{hidden: !(item.deg > realY -  180 && item.deg < realY + 180)}" v-for="(item, index) in arr" :key="index" :style="item.style">{{getName(item)}}</div>
+        <div class="item" v-for="(item, index) in sList" :key="index" :style="item.style">{{getName(item)}}</div>
       </div>
       <div class="mask-wrapper" :style="{transform: 'translateZ(' + this.opts.r + 'px)'}">
         <div class="mask" :style="{height: (this.opts.r * 2 - this.opts.itemH - 2) / 2 + 'px'}"></div>
@@ -22,7 +22,6 @@ export default {
 
   data() {
     return {
-      arr: [],
       opts: Object.assign({
         itemH: 35, // 每个元素的高度
         r: 100, // 半径
@@ -30,9 +29,10 @@ export default {
       }, this.options),
       curValue: {}, // 当前选中的值
       boxStyle: null,
-      curIndex: 0,
       scrollY: 0, // 已经滚动的值
-      realY: 0 // 实时滚动值
+      sList: [],
+      moveMap: {},
+      count: 0
     }
   },
 
@@ -41,38 +41,26 @@ export default {
   },
 
   computed: {
+    // 滚动列表元素个数
+    scrollLen() {
+      return Math.floor(2 * Math.PI * this.opts.r / this.opts.itemH)
+    },
+    
     unitDeg() {
       // 根据列表元素的高度和半径，算出单位角度
-      return Math.ceil(Math.asin(this.opts.itemH / 2 / this.opts.r) * 2 * 180 / Math.PI) || 0
+      return 360 / this.scrollLen
     },
 
-    maxDeg() {
-      if (!this.list) {
-        return 0
-      }
-      return this.unitDeg * (this.list.length - 1)
-    },
-
-    extraLen() {
-      // 循环滚动时需要额外添加元素的个数
-      if (this.isCycle) {
-        let len = Math.ceil(190 / this.unitDeg)
-        if (len > this.list.length) {
-          return 0
-        }
-        return len
-      } else {
-        return 0
-      }
+    // 滚动时展示的元素个数
+    showlen() {
+      return Math.ceil(this.opts.r * 2 / this.unitDeg)
     }
   },
 
   watch: {
     value(val) {
       if (val) {
-        this.curIndex = this.getIndex(val)
         this.setScrollByValue(val)
-        this.curValue = this.arr[this.extraLen + this.curIndex]
       }
     },
 
@@ -94,12 +82,9 @@ export default {
 
   methods: {
     init() {
-      this.arr = this.initList()
+      this.initList()
 
-      if (!this.value) {
-        this.curValue = this.arr[this.extraLen]
-      } else {
-        this.curIndex = this.getIndex(this.value)
+      if (this.value) {
         this.setScrollByValue(this.value)
       }
     },
@@ -109,28 +94,54 @@ export default {
       if (!Array.isArray(this.list)) {
         return []
       }
-      let deg = this.unitDeg
-      let obj = {}
-      let arr = this.list
-      let len = 0
+      let tempList = []
 
-      if (this.isCycle && this.extraLen) {
-        len = this.extraLen
-        let arr1 = arr.slice(-len, arr.length)
-        let arr2 = arr.slice(0, len)
-
-        arr = arr1.concat(arr, arr2)
+      for (let i = 0; i < this.scrollLen; i++) {
+        tempList.push({
+          style: this.getItemStyle(this.unitDeg * i)
+        })
       }
+      this.sList = tempList
 
-      return arr.map((v, i) => {
-        obj.deg = deg * (i - len)
-        obj.style = this.getItemStyle(obj.deg)
-        return Object.assign({}, this.isPlain ? { value: v } : v, obj)
-      })
+     this.setListValue(this.scrollY)
     },
 
     getItemStyle(deg) {
       return `height: ${this.opts.itemH}px; margin-top: ${-this.opts.itemH / 2}px; transform: rotateX(${-deg}deg) translateZ(${this.opts.r}px);`
+    },
+
+    // 根据滚动值赋值
+    setListValue(y) {
+      // 滚动列表当前index
+      let start1 = Math.ceil(y / this.unitDeg % this.scrollLen)
+      // 真实列表当前index
+      let start2 = this.isCycle ? Math.ceil(y / this.unitDeg % this.list.length) : Math.ceil(y / this.unitDeg)
+      
+      if (this.moveMap[start1 + ',' + start2]) {
+        return
+      }
+      let len = Math.ceil(this.showlen / 2) 
+      let i = -len
+      let sindex = 0
+      let oindex = 0
+      this.moveMap[start1 + ',' + start2] = true
+      this.count++
+
+      for (; i < len; i++) {
+        sindex = this.getRealIndex(start1 + i, this.scrollLen)
+        if (this.isCycle || (start2 + i >= 0 && start2 + i <= this.list.length - 1)) {          
+          oindex = this.getRealIndex(start2 + i, this.list.length)
+          this.sList[sindex] = Object.assign(this.sList[sindex], this.isPlain ? { value: this.list[oindex] } : this.list[oindex])
+        } else {
+          this.sList[sindex] = {
+            style: this.sList[sindex].style
+          }
+        }        
+      }
+    },
+
+    getRealIndex(index, len) {
+      return (index + len) % len
     },
 
     // 获取当前选项的名称
@@ -179,8 +190,9 @@ export default {
     setScrollByValue(val) {
       let index = this.getIndex(val)
       if (index > -1) {
-        this.scrollY = this.realY = index * this.unitDeg
-        this.setBoxRotate(this.realY)
+        this.scrollY = index * this.unitDeg
+        this.setBoxRotate(this.scrollY)
+        this.setListValue(this.scrollY)
       }
     },
 
@@ -201,6 +213,8 @@ export default {
       if (event.which == 1) {
         this.mouseleft = true
       }
+      this.moveMap = {}
+      this.count = 0
     },
 
     // 记录手指滑动中的位置，并滚动元素
@@ -211,25 +225,15 @@ export default {
       event.preventDefault()
       let touch = event.changedTouches ? event.changedTouches[0] : event
       let dis = this.scrollY + this.startY - touch.screenY
-
-      if (this.isCycle && this.extraLen) {
-        // 往下拉
-        if (dis < -Math.floor(this.extraLen / 2) * this.unitDeg) {
-          this.curIndex += this.list.length
-          dis = this.scrollY = this.curIndex * this.unitDeg
-        } else if (dis > this.maxDeg + Math.floor(this.extraLen / 2) * this.unitDeg) {
-          this.curIndex = this.curIndex - this.list.length
-          dis = this.scrollY = this.curIndex * this.unitDeg
-        }
-      } else {
+      if (!this.isCycle) {
         if (dis < -this.opts.buffer) {
           dis = -this.opts.buffer
-        } else if (dis > this.maxDeg + this.opts.buffer) {
-          dis = this.maxDeg + this.opts.buffer
+        } else if (dis > (this.list.length - 1) * this.unitDeg + this.opts.buffer) {
+          dis = (this.list.length - 1) * this.unitDeg + this.opts.buffer
         }
       }
-
-      this.realY = dis
+      this.moveY = dis
+      this.setListValue(dis)
       this.setBoxRotate(dis)
     },
 
@@ -250,22 +254,24 @@ export default {
         dis = this.scrollY + (moveDis / total * 720)
         time = 1000
       }
-      if (dis < -Math.floor(this.extraLen / 2) * this.unitDeg) {
-        dis = -Math.floor(this.extraLen / 2) * this.unitDeg
-      } else if (dis > this.maxDeg + Math.floor(this.extraLen / 2) * this.unitDeg) {
-        dis = this.maxDeg + Math.floor(this.extraLen / 2) * this.unitDeg
+      let index = Math.round(dis / this.unitDeg)
+      if (!this.isCycle) {
+        if (index < 0) {
+          index = 0
+        } else if (index > this.list.length - 1) {
+          index = this.list.length - 1
+        }
       }
-
-      this.curIndex = Math.round(dis / this.unitDeg)
       this.animate({
-        s0: this.realY,
-        st: this.curIndex * this.unitDeg,
+        s0: this.moveY,
+        st: index * this.unitDeg,
         time: time,
         cb: (value, isEnd) => {
-          this.realY = this.scrollY = value
+          this.scrollY = value
           this.setBoxRotate(this.scrollY)
+          this.setListValue(this.scrollY)
           if (isEnd) {
-            this.curValue = this.arr[this.curIndex + this.extraLen]
+            console.log('count---->', this.count, this.moveMap)
           }
         }
       })

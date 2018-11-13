@@ -8,12 +8,6 @@
             <img :src="img" class="img" />
             <div>time: {{time}}</div>
         </div>
-        <test>
-            <template slot-scope="test">
-            <div>{{test.bb}}</div>
-            <div>{{test.text}}</div>
-            </template>
-        </test>
         <router-link to="/2048">2048 game</router-link>
         <div>
         <router-link to="/dollOptimize">抓娃娃游戏</router-link>

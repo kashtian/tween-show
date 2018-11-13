@@ -3,6 +3,7 @@ const baseConfig = require('./webpack.base.config');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const vueConfig = require('./vue-loader.config');
+const path = require('path')
 
 if (process.argv.indexOf('--development') > -1) {
     /**
@@ -10,6 +11,9 @@ if (process.argv.indexOf('--development') > -1) {
      */
     baseConfig.entry.app.push('webpack-hot-middleware/client');
     baseConfig.output.filename = '[name].js';
+    baseConfig.resolve.alias = {
+      '@': path.resolve(__dirname, '../src')
+    }
 } else {
     vueConfig.loaders = {
         less: ExtractTextPlugin.extract({
@@ -20,7 +24,7 @@ if (process.argv.indexOf('--development') > -1) {
 }
 
 const devConfig = {
-    devtool: 'source-map',
+    devtool: 'eval-source-map',
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         //跳过编译中出错的模块

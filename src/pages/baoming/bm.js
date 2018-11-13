@@ -1,4 +1,4 @@
-import { Picker } from '../../components';
+import Picker from '@/components/picker/new';
 
 export default {
     name: 'baoming',
@@ -19,7 +19,7 @@ export default {
         return {
             info: {},
             pList: [],
-            pickerVal: 48
+            pickerVal: 50
         }
     },
 
