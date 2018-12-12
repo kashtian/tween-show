@@ -40,7 +40,7 @@ export default {
   },
   mounted() {
     this.boxwidth = this.$el.offsetWidth
-    if (this.opts.loop && this.list.length > 1) {
+    if (this.opts.loop && this.imgList.length > 1) {
       this.cur = 1
       this.scroll(-this.boxwidth, true)
     }
@@ -67,7 +67,7 @@ export default {
       if (this.intervalId) {
         clearInterval(this.intervalId)
       }
-      this.cur = (this.opts.loop && this.list.length > 1) ? 1 : 0
+      this.cur = (this.opts.loop && this.imgList.length > 1) ? 1 : 0
       this.scroll(-this.boxwidth * this.cur, true)
       this.opts.auto && this.autoPlay()
     }
