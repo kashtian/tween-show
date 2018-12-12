@@ -35,21 +35,28 @@ export default {
         transform: 'translate3d(0, 0, 0)'
       },
       cur: 0,
-      activeIndex: 0
+      activeIndex: 0,
+      boxwidth: 0
     }
   },
   mounted() {
     if (this.opts.loop && this.list.length > 1) {
-      let itemW = this.$el.offsetWidth
+      this.boxwidth = this.$el.offsetWidth
       this.cur = 1
-      this.scroll(-itemW, true)
+      this.scroll(-this.boxwidth, true)
     }
     this.opts.auto && this.autoPlay()
+    this.resizefn = () => {
+      this.boxwidth = this.$el.offsetWidth
+      this.scroll(-this.boxwidth * this.cur, true)
+    }
+    window.addEventListener('resize', this.resizefn)
   },
   beforeDestroy() {
     if (this.intervalId) {
       this.intervalId = clearInterval(this.intervalId)
     }
+    window.removeEventListener('resize', this.resizefn)
   },
   watch: {
     cur: function (val) {
@@ -61,9 +68,8 @@ export default {
       if (this.intervalId) {
         clearInterval(this.intervalId)
       }
-      let itemW = this.$el.offsetWidth
       this.cur = (this.opts.loop && this.list.length > 1) ? 1 : 0
-      this.scroll(-itemW * this.cur, true)
+      this.scroll(-this.boxwidth * this.cur, true)
       this.opts.auto && this.autoPlay()
     }
   },
@@ -131,12 +137,11 @@ export default {
     end(event) {
       let interval = (new Date() - this.date) / 1000
       let touch = event.changedTouches[0]
-      let itemW = this.$el.offsetWidth
       if (this.isHorizontal(touch)) {
         let dis = touch.screenX - this.pos.x
         let max = this.list.length - 1
         if (Math.abs(dis) > this.opts.minDis) {
-          if ((interval > 1 && Math.abs(dis) > itemW / 2) || interval < 1) {
+          if ((interval > 1 && Math.abs(dis) > this.boxwidth / 2) || interval < 1) {
             if (dis > 0) {
               this.cur = this.cur - 1 < 0 ? 0 : this.cur - 1
             } else {
@@ -146,7 +151,7 @@ export default {
         }
       }
 
-      this.scroll(-itemW * this.cur)
+      this.scroll(-this.boxwidth * this.cur)
       this.opts.auto && this.autoPlay()
     },
 
@@ -154,7 +159,6 @@ export default {
       if (this.list.length < 2) {
         return
       }
-      let itemW = this.$el.offsetWidth
       let max = this.list.length - 1
       this.intervalId = setInterval(() => {
         if (this.opts.loop && this.cur == max) {
@@ -165,7 +169,7 @@ export default {
           this.cur = 0
         }
         setTimeout(() => {
-          this.scroll(-itemW * this.cur)
+          this.scroll(-this.boxwidth * this.cur)
         }, 100)
       }, this.opts.interval)
     },
@@ -177,14 +181,13 @@ export default {
     },
 
     reset() {
-      let itemW = this.$el.offsetWidth
       let max = this.list.length - 1
       if (this.cur == 0) {
         this.cur = this.list.length - 2
-        this.scroll(-itemW * this.cur, true)
+        this.scroll(-this.boxwidth * this.cur, true)
       } else if (this.cur == max) {
         this.cur = 1
-        this.scroll(-itemW * this.cur, true)
+        this.scroll(-this.boxwidth * this.cur, true)
       }
     },
 
