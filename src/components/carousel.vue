@@ -2,7 +2,7 @@
   <div class="scroller" @touchstart="start" @touchmove="move" @touchend="end">
     <div class="ul" :style="styleObj">
       <div class="li" v-for="(item, index) in list" :key="index" @click.stop="itemClick(item)">
-        <img class="img" :src="item[opts.field]" />
+        <slot :item="item"></slot>
       </div>
     </div>
     <div class="dots" v-if="opts.haveDot && (list.length > 1)" @touchstart.stop @touchmove.stop @touchend.stop>
@@ -27,8 +27,7 @@ export default {
         allowV: 20,
         interval: 5000, // unit: ms
         haveDot: false,
-        minDis: 5,
-        field: 'url' // 图片地址默认字段
+        minDis: 5
       }, this.options),
       pos: {},
       styleObj: {
@@ -40,8 +39,8 @@ export default {
     }
   },
   mounted() {
+    this.boxwidth = this.$el.offsetWidth
     if (this.opts.loop && this.list.length > 1) {
-      this.boxwidth = this.$el.offsetWidth
       this.cur = 1
       this.scroll(-this.boxwidth, true)
     }
@@ -236,16 +235,12 @@ export default {
     white-space: nowrap;
     transition-property: transform;
     .li {
+      position: relative;
       display: inline-block;
       vertical-align: top;
       width: 100%;
       height: 100%;
       text-align: center;
-    }
-    .img {
-      width: 100%;
-      height: 100%;
-      vertical-align: top;
     }
   }
   .dots {
