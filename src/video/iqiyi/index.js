@@ -112,11 +112,7 @@ async function parse(chacheInfo) {
     quality: cacheData.quality,
     qualityIndex: cacheData.quality.findIndex(item => item.nbid == chacheInfo.qualitynum)
   }
-  if (videoResult.length > 1) {
-    videoDetail.segments = videoResult
-  } else {
-    videoDetail.getUrl = videoResult[0].getUrl
-  }
+  videoDetail.segments = videoResult
   return videoDetail
 }
 

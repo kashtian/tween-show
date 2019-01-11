@@ -14,7 +14,10 @@ export default {
   },
 
   mounted() {
-    this.videoParser = getParser('https://www.iqiyi.com/v_19rrbp46t4.html')
+    if (!this.$route.query.page) {
+      return
+    }
+    this.videoParser = getParser(this.$route.query.page)
 
     this.videoFn().then(data => {
       this.config = data
@@ -32,7 +35,7 @@ export default {
   },
   methods: {
     videoFn(quality) {
-      return fetch(`https://api.kashtian.com/video?page=https://www.iqiyi.com/v_19rrbp46t4.html&quality=${quality || 300}`)
+      return fetch(`https://api.kashtian.com/video?page=${this.$route.query.page}&quality=${quality || 300}`)
         .then(res => {
           return res.json()
         }).then(res => {
