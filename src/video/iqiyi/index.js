@@ -1,5 +1,5 @@
 import bidMap from './bid-map'
-import { myJsonp } from '../jsonp'
+import { myJsonp, xhrp } from '../jsonp'
 
 // 调用cache.video.iqiyi.com/jp/dash
 function getCacheData(chacheInfo) {
@@ -81,9 +81,7 @@ function getVideoUrl({params, video}, protocol) {
 // 获取视频地址函数
 function videoUrlFn(url) {
   return function() {
-    return fetch(`https://api.kashtian.com/video/again?url=${encodeURIComponent(url)}`, {
-      referrerPolicy: 'no-referrer'
-    }).then(res => res.json())
+    return xhrp(`https://api.kashtian.com/video/again?url=${encodeURIComponent(url)}`)
     .then(data => {
       return `https://api.kashtian.com/video/again?url=${encodeURIComponent(data.l)}`
     }).catch(err => {
