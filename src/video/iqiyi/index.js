@@ -1,11 +1,15 @@
 import bidMap from './bid-map'
+import { myJsonp } from '../jsonp'
 
 // 调用cache.video.iqiyi.com/jp/dash
 function getCacheData(chacheInfo) {
-  return fetch(chacheInfo.url).then(res => res.text())
-    .then(data => {
-      let jsonInfo = parseCacheResult(data)
-      if (!jsonInfo.program) {
+  return myJsonp(chacheInfo.url, chacheInfo.params.callback)
+    .then(res => {
+      if (!res || res.code != 'A00000') {
+        return 
+      }
+      let jsonInfo = res.data
+      if (!jsonInfo || !jsonInfo.program) {
         return
       }
       let videoArr = jsonInfo.program.video || []
@@ -53,7 +57,7 @@ function getSubtitle(data) {
 }
 
 // 调用data.video接口，获取完整的视频地址
-function getRealVideoUrl({params, video}, protocol) {
+function getVideoUrl({params, video}, protocol) {
   let otherParams = {
     'cross-domain': 1,
     'qyid': params['k_uid'],
@@ -62,24 +66,30 @@ function getRealVideoUrl({params, video}, protocol) {
     pv: 0.1
   }
   let otherStr = ''
-  for (key in otherParams) {
+  for (let key in otherParams) {
     otherStr += `&${key}=${otherParams[key]}`
   }
-  let arr = []
-  video.fs.forEach(item => {
-    let url = `${protocol}//data.video.iqiyi.com/videos` + item.l + otherStr
-    arr.push(
-      fetch(url).then(res => res.json())
-        .then(data => {
-          data.duration = item.d
-          data.filesize = item.b
-          return data
-        }).catch(err => {
-          console.error(err.message || err)
-        })
-    )
+  return video.fs.map(item => {
+    return {
+      duration: item.d,
+      filesize: item.b,
+      getUrl: videoUrlFn(`${protocol}//data.video.iqiyi.com/videos` + item.l + otherStr)
+    }
   })
-  return Promise.all(arr)
+}
+
+// 获取视频地址函数
+function videoUrlFn(url) {
+  return function() {
+    return fetch(`https://api.kashtian.com/video/again?url=${encodeURIComponent(url)}`, {
+      referrerPolicy: 'no-referrer'
+    }).then(res => res.json())
+    .then(data => {
+      return `https://api.kashtian.com/video/again?url=${encodeURIComponent(data.l)}`
+    }).catch(err => {
+      console.error(err.message || err)
+    })
+  }
 }
 
 // 解析入口
@@ -91,7 +101,7 @@ async function parse(chacheInfo) {
   if (!cacheData) {
     return Promise.reject('iqiyi get cache data failed')
   }
-  let videoResult = await getRealVideoUrl(cacheData, chacheInfo.protocol)
+  let videoResult = getVideoUrl(cacheData, chacheInfo.protocol)
   if (!videoResult || !videoResult.length) {
     return Promise.reject('iqiyi get video result failed')
   }
@@ -102,18 +112,12 @@ async function parse(chacheInfo) {
     filesize: cacheData.video.vsize,
     stl: cacheData.stl || '',
     quality: cacheData.quality,
-    qualityIndex: cacheData.quality.findIndex(item => item.nbid == chacheInfo.quality)
+    qualityIndex: cacheData.quality.findIndex(item => item.nbid == chacheInfo.qualitynum)
   }
   if (videoResult.length > 1) {
-    videoDetail.segments = videoResult.map(item => {
-      return {
-        duration: item.duration,
-        filesize: item.filesize,
-        url: item.l
-      }
-    })
+    videoDetail.segments = videoResult
   } else {
-    videoDetail.url = videoResult[0]
+    videoDetail.getUrl = videoResult[0].getUrl
   }
   return videoDetail
 }
